@@ -9,6 +9,8 @@ import MobileLogin from './scenes/MobileLogin';
 import MobileRegister from './scenes/MobileRegister';
 import RegisterMessage from './scenes/RegisterMessage';
 
+import Home from './scenes/Home';
+
 const {
   popRoute,
 } = actions;
@@ -46,7 +48,7 @@ class AppNavigator extends Component {
   _renderScene({ scene }) { // eslint-disable-line class-methods-use-this
     switch (scene.route.key) {
       case 'home':
-        return <View />;
+        return <Home />;
       case 'mobile-login':
         return <MobileLogin />;
       case 'mobile-register':
