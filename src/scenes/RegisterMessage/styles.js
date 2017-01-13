@@ -45,7 +45,7 @@ module.exports = StyleSheet.create({
     alignSelf: 'center',
   },
   titleButton: {
-    backgroundColor: '#eee',
+    backgroundColor: '#eeea',
   },
   titleButtonText: {
     color: '#333',

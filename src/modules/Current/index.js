@@ -9,103 +9,71 @@ import {
   Grid,
   Col,
   Row,
+  Thumbnail,
 } from 'native-base';
 
-import { TouchableNativeFeedback } from 'react-native';
 import s from './styles';
 
-type ItemTextProps = {
-  text: string,
-  icon: string,
-  color: string,
+import HomeRow, { RowProps } from '../../components/HomeRow';
+
+type Rows = Array<RowProps>
+type Props = {
+  rows: Rows,
 }
 
-const ItemText = ({ text, icon, color }: ItemTextProps) =>
-  <View style={s.textWrap}>
-    <Icon
-      name={icon}
-      style={[s.icon, { color }, {
-        marginLeft: icon === 'ios-pin' ? 2.5 : 0,
-        marginRight: icon === 'ios-pin' ? 13 : 10,
-      }]}
-    />
-    <Text style={s.text}>{text}</Text>
-  </View>;
+type State = {
+  buttonState: Array,
+}
 
 class Current extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      buttonState: props.rows.map(() => 'add'),
+    };
+
+    this.add = this.add.bind(this);
+  }
+
+  state: State
+
+  add(index) {
+    return () => this.setState((prev) => {
+      const current = prev.buttonState;
+      current[index] = 'adding';
+      return {
+        buttonState: current,
+      };
+    }, () => setTimeout(() => {
+      this.setState((prev) => {
+        const current = prev.buttonState;
+        current[index] = 'success';
+        return {
+          buttonState: current,
+        };
+      });
+    }, 1000));
+  }
+  props: Props
+  renderRow() {
+    const { rows } = this.props;
+    return rows.map((v, i) => (
+      <HomeRow
+        key={i}
+        start={v.start}
+        end={v.end}
+        time={v.time}
+        money={v.money}
+        buttonState={this.state.buttonState[i]}
+        add={this.add(i)}
+      />
+    ));
+  }
+
   render() {
     return (
       <View>
-        
-          <Card style={{ flex: 0, borderWidth: 0 }}>
-            <CardItem style={{ marginHorizontal: 10, borderBottomWidth: 0}}>
-              <Grid>
-                <Col size={75}>
-                  <ItemText text="广东海洋大学主校区" icon="ios-pin" color="#F16B6F" />
-                  <ItemText text="广东海洋大学霞山校区" icon="ios-pin" color="#79BD9A" />
-                  <ItemText text="10 : 30 出发" icon="ios-time" color="#F17F42" />
-                  <ItemText text="48元" icon="ios-cash" color="#3B8686" />
-                </Col>
-                <Col size={25} style={{justifyContent: 'flex-end', borderLeftWidth: 1, borderColor: '#c9d6de'}}>
-                <Row size={50} style={{ justifyContent: 'center'}}>
-                <Button
-                  style={{ alignSelf: 'center'}}
-                    transparent
-                    textStyle={{ color: '#09BB07' }}>
-                    <Text>不感兴趣</Text>
-                  </Button>
-                </Row>
-                <Row size={50} style={{ borderTopWidth: 1, borderColor: '#c9d6de', justifyContent: 'center'}}>
-                  <Button
-                    style={{ alignSelf: 'center'}}
-                    transparent
-                    textStyle={{ color: '#09BB07' }}>
-                    <Icon name="ios-checkmark" style={{color: 'green'}}/>
-                    <Text>抢单</Text>
-                  </Button>
-                </Row>
-                </Col>
-              </Grid>
-            </CardItem>
-          </Card>
-          <Card style={{ flex: 0, borderWidth: 0 }}>
-            <CardItem style={{ marginHorizontal: 10, borderBottomWidth: 0}}>
-              <Grid>
-                <Col size={75}>
-                  <ItemText text="广东海洋大学主校区" icon="ios-pin" color="#F16B6F" />
-                  <ItemText text="广东海洋大学霞山校区" icon="ios-pin" color="#79BD9A" />
-                  <ItemText text="10 : 30 出发" icon="ios-time" color="#F17F42" />
-                  <ItemText text="48元" icon="ios-cash" color="#3B8686" />
-                </Col>
-                <Col size={25} style={{justifyContent: 'flex-end'}}>
-
-                  <Button transparent style={{alignSelf: 'flex-end'}} textStyle={{color: '#09BB07'}}>
-                    <Icon name="ios-checkmark" style={{color: 'green'}}/>
-                    <Text>抢单</Text>
-                  </Button>
-                </Col>
-              </Grid>
-            </CardItem>
-          </Card>
-          <Card style={{ flex: 0, borderWidth: 0 }}>
-            <CardItem style={{ marginHorizontal: 10, borderBottomWidth: 0}}>
-              <Grid>
-                <Col size={75}>
-                  <ItemText text="广东海洋大学主校区" icon="ios-pin" color="#F16B6F" />
-                  <ItemText text="广东海洋大学霞山校区" icon="ios-pin" color="#79BD9A" />
-                  <ItemText text="10 : 30 出发" icon="ios-time" color="#F17F42" />
-                  <ItemText text="48元" icon="ios-cash" color="#3B8686" />
-                </Col>
-                <Col size={25} style={{justifyContent: 'flex-end'}}>
-
-                  <Button transparent style={{alignSelf: 'flex-end'}} textStyle={{color: '#09BB07'}}>
-                    <Icon name="ios-checkmark" style={{color: 'green'}}/>
-                    <Text>抢单</Text>
-                  </Button>
-                </Col>
-              </Grid>
-            </CardItem>
-          </Card>
+        {this.renderRow()}
       </View>
     );
   }
