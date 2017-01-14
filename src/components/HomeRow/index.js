@@ -1,23 +1,14 @@
-import React, { Component } from 'react';
+import React from 'react';
 import {
   Card,
   CardItem,
-  View,
   Text,
-  Icon,
   Grid,
   Col,
 } from 'native-base';
-import { CircleButton, RectangleButton } from 'react-native-button-component';
+import { RectangleButton } from 'react-native-button-component';
 
-
-import s from './styles';
-
-type ItemTextProps = {
-  text: string,
-  icon: string,
-  color: string,
-}
+import ItemText from '../../gear/ItemText';
 
 export type RowProps = {
   start: string,
@@ -28,15 +19,6 @@ export type RowProps = {
   add: Function,
   reject: Function,
 }
-
-const ItemText = ({ text, icon, color }: ItemTextProps) =>
-  <View style={s.textWrap}>
-    <Icon
-      name={icon}
-      style={[s.icon, { color }]}
-    />
-    <Text style={s.text}>{text}</Text>
-  </View>;
 
 const Row = ({ start, end, time, money, add, reject, buttonState }: RowProps) => (
   <Card style={{ flex: 0, borderWidth: 0 }}>
@@ -83,7 +65,6 @@ const Row = ({ start, end, time, money, add, reject, buttonState }: RowProps) =>
               },
             }}
           />
-          
         </Col>
       </Grid>
     </CardItem>

@@ -81,13 +81,13 @@ class Home extends Component {
   renderTitle() {
     switch (this.state.activeTab) {
       case 'home':
-        return '当前拼车';
+        return '抢单';
       case 'list':
         return '订单';
       case 'account':
         return '我';
       default:
-        return '当前拼车';
+        return '抢单';
     }
   }
   render() {
@@ -113,7 +113,7 @@ class Home extends Component {
               })}
             >
               <Badge>2</Badge>
-                当前
+                抢单
                 <Icon name="home" />
             </Button>
             <Button
