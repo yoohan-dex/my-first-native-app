@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 
-import { Text, TextProperties } from 'react-native';
+import { Text, TextStyle } from 'react-native';
+import BackgroundTimer from 'react-native-background-timer';
+
 
 type Props = {
   dead: number,
-  style: TextProperties.style,
-  text: Function,
+  style: TextStyle,
+  text: (sec: number, min: number, hour: number) => string,
 }
 
 class Countdown extends Component {
@@ -17,7 +19,7 @@ class Countdown extends Component {
     super(props);
 
     this.addZero = function (time) {
-      return time <= 10 ? time : `0${time}`;
+      return time < 10 ? `0${time}` : time;
     };
     const now = new Date().getTime();
     const second = (props.dead - now) / 1000;
@@ -28,17 +30,17 @@ class Countdown extends Component {
 
 
   componentDidMount() {
-    this.timer = setInterval(() => this.setState(pre => ({
+    this.timer = BackgroundTimer.setInterval(() => this.setState(pre => ({
       second: pre.second - 1,
     }), () => {
       if (this.state.second <= 0) {
-        clearInterval(this.timer);
+        BackgroundTimer.clearInterval(this.timer);
       }
     }), 1000);
   }
 
   componentWillUnmount() {
-    clearInterval(this.timer);
+    BackgroundTimer.clearInterval(this.timer);
   }
 
   props: Props

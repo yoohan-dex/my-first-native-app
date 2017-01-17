@@ -8,7 +8,7 @@ import Login from './scenes/Login';
 import MobileLogin from './scenes/MobileLogin';
 import MobileRegister from './scenes/MobileRegister';
 import RegisterMessage from './scenes/RegisterMessage';
-
+import ItemDetial from './scenes/ItemDetail';
 import Home from './scenes/Home';
 
 const {
@@ -57,6 +57,8 @@ class AppNavigator extends Component {
         return <RegisterMessage />;
       case 'login':
         return <Login />;
+      case 'item-detail':
+        return <ItemDetial />;
       default:
         return <Login />;
     }

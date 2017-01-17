@@ -16,48 +16,22 @@ import {
 
 import Current from '../../modules/Current';
 import List from '../../modules/List';
+import Me from '../../modules/Me';
+
 import myTheme from '../../theme/base-theme';
 
-const rows = [{
-  start: '广东海洋大学主校区',
-  end: '广东海洋大学霞山校区',
-  time: '20: 30',
-  money: '48',
-}, {
-  start: '广东海洋大学主校区',
-  end: '逸福国际',
-  time: '20: 40',
-  money: '40',
-}, {
-  start: '广东海洋大学主校区',
-  end: '广东海洋大学霞山校区',
-  time: '20: 30',
-  money: '48',
-}, {
-  start: '广东海洋大学主校区',
-  end: '逸福国际',
-  time: '20: 40',
-  money: '40',
-}, {
-  start: '广东海洋大学主校区',
-  end: '广东海洋大学霞山校区',
-  time: '20: 30',
-  money: '48',
-}, {
-  start: '广东海洋大学主校区',
-  end: '逸福国际',
-  time: '20: 40',
-  money: '40',
-}];
+import homemock from '../../mock/home';
+import listmock from '../../mock/list';
+
 
 class Home extends Component {
   constructor() {
     super();
     this.state = {
       activeTab: 'home',
-      home: <Current rows={rows} />,
-      list: <List />,
-      account: <Text>account</Text>,
+      home: <Current rows={homemock} />,
+      list: <List rows={listmock} />,
+      account: <Me />,
     };
 
     this.renderTitle = this.renderTitle.bind(this);
@@ -98,7 +72,7 @@ class Home extends Component {
         {list && android ? undefined : <Header style={{shadowOpacity: 0}}>
           <Title>{this.renderTitle()}</Title>
         </Header> }
-        {this.state.activeTab === 'home' || this.state.activeTab === 'account' ? <ScrollView>
+        {this.state.activeTab === 'home' || this.state.activeTab === 'account' ? <ScrollView style={{ backgroundColor: 'white' }}>
           {this.renderContent()}
         </ScrollView> : undefined }
         {this.state.activeTab === 'list'

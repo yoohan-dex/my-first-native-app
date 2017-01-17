@@ -1,18 +1,42 @@
 import React, { Component } from 'react';
 import { Card } from 'native-base';
+import { connect } from 'react-redux';
+import { actions } from 'react-native-navigation-redux-helpers';
 
 import { Current } from '../ListRow';
 
-class CurrentContainer extends Component {
+const {
+  pushRoute,
+} = actions;
 
-  renderRow(data, section, row, highlight) {
+type Props = {
+  dataArray: Array,
+  pushRoute: Function,
+  navigation: Object,
+}
+
+class CurrentContainer extends Component {
+  constructor() {
+    super();
+
+    this.renderRow = this.renderRow.bind(this);
+    this.handlePress = this.handlePress.bind(this);
+  }
+  props: Props
+
+  handlePress(id) {
+    this.props.pushRoute({ key: 'item-detail', id }, this.props.navigation.key);
+  }
+
+  renderRow(data, section, row) {
     return (
       <Current
         key={row}
         start={data.start}
         time={data.time}
         end={data.end}
-        handlePress={() => ''}
+        state={data.state}
+        handlePress={this.handlePress}
       />
     );
   }
@@ -20,9 +44,24 @@ class CurrentContainer extends Component {
     return (
       <Card
         renderRow={this.renderRow}
+        dataArray={this.props.dataArray}
       />
     );
   }
 }
 
-export default CurrentContainer;
+function bindActions(dispatch) {
+  return {
+    pushRoute: (route, key) => dispatch(pushRoute(route, key)),
+  };
+}
+
+const mapStateToProps = state => ({
+  navigation: state.cardNavigation,
+});
+
+
+
+export default {
+  Current: connect(mapStateToProps, bindActions)(CurrentContainer),
+};

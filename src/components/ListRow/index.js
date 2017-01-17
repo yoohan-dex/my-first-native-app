@@ -1,10 +1,10 @@
 import React from 'react';
+import { Text } from 'react-native';
 import {
   CardItem,
   Grid,
   Col,
   Row,
-  Text,
 } from 'native-base';
 
 import ItemText from '../../gear/ItemText';
@@ -14,9 +14,35 @@ type Props = {
   start: string,
   end: string,
   time: string,
+  state: 'ongoing' | 'issue' | 'checking' | 'driving',
   handlePress: Function,
 }
-const Current = ({ start, end, time, handlePress }: Props) => {
+
+const Ongoing = () => <Countdown
+  dead={new Date().getTime() + 10000000}
+  style={{
+    fontWeight: 'bold',
+    fontSize: 22,
+  }}
+/>;
+
+const State = props => <Text style={{ fontWeight: 'bold', fontSize: 22, textAlign: 'center', alignSelf: 'center' }}>{props.children}</Text>;
+const Current = ({ start, end, time, handlePress, state }: Props) => {
+  const parseState = () => {
+    switch (state) {
+      case 'ongoing':
+        return <Ongoing />;
+      case 'checking':
+        return <State>等待乘客确认订单</State>;
+      case 'driving':
+        return <State>已载到乘客</State>;
+      case 'issue':
+        return <State>纠纷处理中</State>;
+      default:
+        return <Ongoing />;
+    }
+  };
+
   return (
     <CardItem
       button
@@ -28,15 +54,18 @@ const Current = ({ start, end, time, handlePress }: Props) => {
           <ItemText text={end} icon="room" color="#79BD9A" />
           <ItemText text={`${time} 出发`} icon="schedule" color="#F17F42" />
         </Col>
-        <Col size={40} style={{ padding: 20 }}>
-          <Grid>
+        <Col size={40} style={{ paddingVertical: 20, paddingHorizontal: 10, justifyContent: 'center' }}>
+          { state === 'ongoing'
+          ? <Grid>
             <Row size={50} style={{ justifyContent: 'center' }}>
-              <Text>出车倒计时</Text>
+              <Text style={{ fontSize: 20, fontWeight: 'bold' }}>出车倒计时</Text>
             </Row>
             <Row size={50} style={{ justifyContent: 'center' }}>
-              <Text>20: 20</Text>
+              {parseState()}
             </Row>
           </Grid>
+          : parseState()
+        }
         </Col>
       </Grid>
     </CardItem>

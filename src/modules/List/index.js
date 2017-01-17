@@ -2,6 +2,11 @@ import React, { Component } from 'react';
 import { View, StyleSheet, Animated, Text } from 'react-native';
 import { TabViewAnimated, TabBarTop, TabBar } from 'react-native-tab-view';
 
+import container from '../../components/ListContainer';
+
+const {
+  Current,
+} = container;
 
 const styles = StyleSheet.create({
   container: {
@@ -22,12 +27,12 @@ const styles = StyleSheet.create({
     margin: 8,
   },
   indicator: {
-    backgroundColor: '#77AAAD',
+    backgroundColor: 'white',
     position: 'absolute',
     left: 0,
     bottom: 0,
     right: 0,
-    height: 2,
+    height: 4,
   },
 });
 
@@ -90,9 +95,11 @@ class List extends Component {
   renderScene = ({ route }) => {
     switch (route.key) {
       case '1':
-        return <View style={[styles.page, { backgroundColor: 'white' }]} />;
+        return <Current dataArray={this.props.rows} />;
       case '2':
-        return <View style={[styles.page, { backgroundColor: '#673ab7' }]} />;
+        return <Current dataArray={this.props.rows} />;
+      case '3':
+        return <Current dataArray={this.props.rows} />;
       default:
         return null;
     }
