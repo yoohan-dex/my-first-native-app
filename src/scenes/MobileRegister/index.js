@@ -73,7 +73,7 @@ class MobileRegister extends Component {
             transparent
             onPress={() => this.popRoute()}
           >
-            <Icon name="ios-arrow-back" />
+            <Icon name="keyboard-arrow-left" />
           </Button>
 
           <Title>手机注册</Title>

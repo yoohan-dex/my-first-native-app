@@ -12,13 +12,13 @@ import s from './styles';
 
 const steps = [{
   title: '个人信息',
-  name: 'ios-card',
+  name: 'assignment',
 }, {
   title: '车辆信息',
-  name: 'ios-car',
+  name: 'directions-car',
 }, {
   title: '完成',
-  name: 'ios-happy',
+  name: 'tag-faces',
 }];
 
 

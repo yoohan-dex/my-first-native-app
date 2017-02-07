@@ -29,7 +29,7 @@ const Row = ({ start, end, time, money, add, reject, buttonState }: RowProps) =>
           <ItemText text={end} icon="room" color="#79BD9A" />
           <ItemText text={`${time} 出发`} icon="schedule" color="#F17F42" />
         </Col>
-        <Col size={25} style={{ justifyContent: 'space-between', paddingHorizontal: 10, paddingVertical: 15, borderLeftWidth: 1, borderColor: '#ccc' }}>
+        <Col size={25} style={{ justifyContent: 'space-between', paddingHorizontal: 10, paddingVertical: 15 }}>
           <Text style={{ textAlign: 'center', color: 'green', fontSize: 20, lineHeight: 30, fontWeight: 'bold', marginBottom: 10 }}>{`${money} 元`}</Text>
           <RectangleButton
             buttonState={buttonState}

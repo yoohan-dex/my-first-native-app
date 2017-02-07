@@ -12,9 +12,13 @@ import {
   InputGroup,
   Input,
 } from 'native-base';
+import { Field, reduxForm } from 'redux-form';
 
+import RenderField from '../../components/RenderField';
 import myTheme from '../../theme/base-theme';
 import s from './styles';
+
+// import InputField from '../../gear/InputField';
 
 const {
   popRoute,
@@ -39,30 +43,23 @@ class MobileLogin extends Component {
             transparent
             onPress={() => this.popRoute()}
           >
-            <Icon name="ios-arrow-back" />
+            <Icon name="keyboard-arrow-left" />
           </Button>
-
           <Title>手机登陆</Title>
         </Header>
         <View style={s.container}>
-          <InputGroup style={[s.inputGroup, s.firstInput]}>
-            <Icon name="ios-person" />
-            <Input
-              renderToHardwareTextureAndroid
-              style={s.input}
-              keyboardType="numeric"
-              placeholder="手机号码"
-            />
-          </InputGroup>
-          <InputGroup style={[s.inputGroup, s.lastInput]}>
-            <Icon name="ios-unlock-outline" />
-            <Input
-              renderToHardwareTextureAndroid
-              style={s.input}
-              placeholder="密码"
-              secureTextEntry
-            />
-          </InputGroup>
+          <Field
+            name="realName"
+            type="numeric"
+            component={RenderField}
+            label="手机号码"
+          />
+          <Field
+            name="personCard"
+            type="default"
+            component={RenderField}
+            label="密码"
+          />
           <View style={s.buttonGroup}>
             <Button
               rounded
@@ -87,4 +84,8 @@ function bindActions(dispatch) {
 const mapStateToProps = state => ({
   navigation: state.cardNavigation,
 });
-export default connect(mapStateToProps, bindActions)(MobileLogin);
+
+const Final = reduxForm({
+  form: 'mobileLogin',
+})(MobileLogin);
+export default connect(mapStateToProps, bindActions)(Final);

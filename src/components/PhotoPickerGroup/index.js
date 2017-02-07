@@ -18,6 +18,8 @@ import defaultPhoto from './defaultPhoto.png';
 
 const buttons = ['取消', '从相册中选取', '拍照'];
 const CANCEL_INDEX = 0;
+const CHOOSE_FROM_GALLARY = 1;
+const TAKE_PHOTO = 2;
 
 
 type Props = {
@@ -29,9 +31,9 @@ type Props = {
 const PhotoPickerGroup = (props: Props) => {
   const { title, fetch, source, defaultText } = props;
   const switchAction = (index) => {
-    if (index === 1) {
+    if (index === CHOOSE_FROM_GALLARY) {
       launchGallery(fetch);
-    } else if (index === 2) {
+    } else if (index === TAKE_PHOTO) {
       launchCamera(fetch);
     }
   };
@@ -50,7 +52,7 @@ const PhotoPickerGroup = (props: Props) => {
           onPress={show}
         >
           选择照片
-          <Icon name="ios-arrow-forward" />
+          <Icon name="keyboard-arrow-right" />
         </Button>
         <ActionSheet
           ref={o => (actionSheet = o)}

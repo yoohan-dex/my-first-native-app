@@ -69,10 +69,10 @@ class Home extends Component {
     const android = Platform.OS === 'android';
     return (
       <Container theme={myTheme}>
-        {list && android ? undefined : <Header style={{shadowOpacity: 0}}>
+        {list && android ? undefined : <Header style={{ shadowOpacity: 0 }}>
           <Title>{this.renderTitle()}</Title>
         </Header> }
-        {this.state.activeTab === 'home' || this.state.activeTab === 'account' ? <ScrollView style={{ backgroundColor: 'white' }}>
+        {this.state.activeTab === 'home' || this.state.activeTab === 'account' ? <ScrollView style={{ backgroundColor: '#eee' }}>
           {this.renderContent()}
         </ScrollView> : undefined }
         {this.state.activeTab === 'list'
