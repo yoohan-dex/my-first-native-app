@@ -61,7 +61,6 @@ const mapStateToProps = state => ({
 });
 
 
-
 export default {
   Current: connect(mapStateToProps, bindActions)(CurrentContainer),
 };

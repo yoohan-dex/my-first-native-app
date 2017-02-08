@@ -1,4 +1,3 @@
-// @flow
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { actions } from 'react-native-navigation-redux-helpers';
@@ -9,8 +8,6 @@ import {
   Title,
   Button,
   Icon,
-  InputGroup,
-  Input,
 } from 'native-base';
 import { Field, reduxForm } from 'redux-form';
 

@@ -25,8 +25,4 @@ class ItemAction extends Component {
   }
 }
 
-ItemAction.propTypes = {
-
-};
-
 export default ItemAction;
