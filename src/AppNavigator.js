@@ -10,6 +10,7 @@ import MobileRegister from './scenes/MobileRegister';
 import RegisterMessage from './scenes/RegisterMessage';
 import ItemDetial from './scenes/ItemDetail';
 import Home from './scenes/Home';
+import Wallet from './scenes/Wallet';
 
 const {
   popRoute,
@@ -59,6 +60,8 @@ class AppNavigator extends Component {
         return <Login />;
       case 'item-detail':
         return <ItemDetial />;
+      case 'wallet':
+        return <Wallet />;
       default:
         return <Login />;
     }
