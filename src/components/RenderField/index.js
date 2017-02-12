@@ -14,14 +14,16 @@ type Props = {
   label: string,
   type: string,
   meta: Object,
+  password: boolean,
 }
 
-const RenderField = ({ input, label, type, meta: { touched, error } }: Props) => (
+const RenderField = ({ input, label, type, password, meta: { touched, error } }: Props) => (
   <View
     style={s.inputGroup}
     iconRight
   >
     <InputField
+      password={password}
       {...input}
       keyboardType={type}
       tintColor={error && touched ? '#EE7785' : '#6E7783'}

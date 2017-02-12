@@ -1,7 +1,9 @@
 // @flow
 import React, { Component, PropTypes } from 'react';
+import { AsyncStorage } from 'react-native';
 import { connect } from 'react-redux';
 import { actions } from 'react-native-navigation-redux-helpers';
+import { getStoredState } from 'redux-persist';
 import {
   Container,
   View,
@@ -9,51 +11,77 @@ import {
   Title,
   Button,
   Icon,
-  InputGroup,
-  Input,
   Text,
 } from 'native-base';
+import Spinner from 'react-native-loading-spinner-overlay';
+
+// import alert from '../../utils/alert';
 import { Field, reduxForm } from 'redux-form';
-import { startSMSTiming } from '../../actions/forSMS';
 
 import renderField from '../../components/RenderField';
 
 import ButtonForSms from '../../components/ButtonForSms';
 import myTheme from '../../theme/base-theme';
 import s from './styles';
-
+import { post } from '../../utils/request';
+import { Form } from '../../actions/types';
+import { mobileRegister } from '../../actions/register';
+import { removeError } from '../../actions/global';
 
 const {
   popRoute,
   pushRoute,
 } = actions;
 
+type Data = {
+  values?: Form,
+}
+
+type Props = {
+  popRoute: Function,
+  pushRoute: Function,
+  navigation: Object,
+  data: Object<Data>,
+  registerAction: Function,
+  removeError: Function,
+  state: Object,
+}
+
 class MobileRegister extends Component {
 
-  static propTypes = {
-    popRoute: PropTypes.func,
-    pushRoute: PropTypes.func,
-    navigation: PropTypes.shape({
-      key: PropTypes.string,
-    }),
-    sms: PropTypes.shape({
-      available: PropTypes.bool,
-      timing: PropTypes.number,
-    }),
-    startTiming: PropTypes.func,
-  }
   constructor() {
     super();
     this.state = {
       uri: '',
+
     };
+
+    this.getSMS = this.getSMS.bind(this);
   }
 
+
+  async componentWillUnmount() {
+    this.props.removeError();
+    try {
+      const state = await getStoredState({storage: AsyncStorage });
+      console.log(state);
+    } catch (error) {
+      // Error retrieving data
+      console.log(error);
+    }
+  }
 
   getSMS() {
-    const { startTiming } = this.props;
-    startTiming(60);
+    const { data } = this.props;
+    if (data.values && data.values.phone) {
+      post('smsoperation/sendSmsVerificationCode', { phone_num: data.values.phone }).then(
+
+      console.log,
+
+      );
+    }
   }
+  props: Props
 
   popRoute() {
     this.props.popRoute(this.props.navigation.key);
@@ -63,8 +91,18 @@ class MobileRegister extends Component {
     this.props.pushRoute({ key: route }, this.props.navigation.key);
   }
 
+  mobileRegister() {
+    const data: Data = this.props.data;
+    if (data.values) {
+      const { phone, password, validCode } = data.values;
+      if (phone && password && validCode) {
+        this.props.registerAction(data.values);
+      }
+    }
+  }
+
   render() {
-    const { available, timing } = this.props.sms;
+    const { registering, error } = this.props.state;
     
     return (
       <Container theme={myTheme}>
@@ -79,34 +117,46 @@ class MobileRegister extends Component {
           <Title>手机注册</Title>
         </Header>
         <View style={s.container}>
-          <ButtonForSms
-            onPress={() => this.getSMS()}
-            inputStyle={s.input}
-            available={available}
-            timing={timing}
+          <Spinner
+            visible={registering}
+            textContent={'正在注册...'}
+            textStyle={{ color: '#FFF' }}
           />
           <Field
-            name="realName"
-            type="default"
-            component={renderField}
-            label="真实姓名"
+            name="phone"
+            type="numeric"
+            component={ButtonForSms}
+            label="手机号码"
+            button={this.getSMS}
           />
+
           <Field
-            name="personCard"
+            name="validCode"
             type="numeric"
             component={renderField}
-            label="身份证号码"
+            label="验证码"
+          />
+          <Field
+            name="password"
+            type="ascii-capable"
+            password
+            component={renderField}
+            label="密码"
           />
           <View style={s.buttonGroup}>
             <Button
-              
+
               rounded
               block
               success
-              onPress={() => this.pushRoute('register-message')}
+              onPress={() => {
+                console.log(this.props);
+                this.mobileRegister();
+              }}
             >
               注册
             </Button>
+            <Text style={{ textAlign: 'center', marginTop: 30 }}>{error}</Text>
           </View>
         </View>
       </Container>
@@ -114,20 +164,40 @@ class MobileRegister extends Component {
   }
 }
 
+const validate = (values: Form) => {
+  const errors = {};
+  const { phone, validCode, password } = values;
+  if (!phone) {
+    errors.phone = 'Required';
+  } else if (phone.length !== 11) {
+    errors.phone = 'Must be 11 number';
+  } else if (!validCode) {
+    errors.validCode = 'Required';
+  } else if (!password) {
+    errors.password = 'Required';
+  } else if (password.length < 8) {
+    errors.password = 'Must be 8 characters or more';
+  }
+  return errors;
+};
+
 function bindActions(dispatch) {
   return {
     popRoute: key => dispatch(popRoute(key)),
     pushRoute: (route, key) => dispatch(pushRoute(route, key)),
-    startTiming: second => dispatch(startSMSTiming(second)),
+    registerAction: form => dispatch(mobileRegister(form)),
+    removeError: () => dispatch(removeError()),
   };
 }
 
 const mapStateToProps = state => ({
   navigation: state.cardNavigation,
-  sms: state.forSMS,
+  data: state.form.register,
+  state: state.register,
 });
 const component = reduxForm({
-  form: 'Register',
+  form: 'register',
+  validate,
 })(MobileRegister);
 export default connect(mapStateToProps, bindActions)(component);
 

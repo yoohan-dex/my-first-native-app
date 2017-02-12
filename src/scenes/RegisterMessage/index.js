@@ -97,6 +97,7 @@ class RegisterMessage extends Component {
     this.setState({
       step: this.state.step + 1,
     }, this.scrollToTop);
+    console.log(this.props);
   }
 
   preStep() {

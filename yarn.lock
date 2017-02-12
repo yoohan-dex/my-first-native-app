@@ -3967,6 +3967,10 @@ react-native-linear-gradient@^1.5.15:
   version "1.6.2"
   resolved "https://registry.yarnpkg.com/react-native-linear-gradient/-/react-native-linear-gradient-1.6.2.tgz#1ea3e7a186b514661b927673aa9c427dd520999f"
 
+react-native-loading-spinner-overlay@latest:
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/react-native-loading-spinner-overlay/-/react-native-loading-spinner-overlay-0.4.1.tgz#f1ebc7df6a7f8b9d06588fb51b5554565bb3cddb"
+
 react-native-material-kit@^0.3.4:
   version "0.3.4"
   resolved "https://registry.yarnpkg.com/react-native-material-kit/-/react-native-material-kit-0.3.4.tgz#2b513470373c83adcb37c3a36580892b50e00acd"
@@ -4242,6 +4246,10 @@ redux-persist@^4.0.0, redux-persist@^4.0.1:
     json-stringify-safe "^5.0.1"
     lodash "^4.11.1"
     lodash-es "^4.16.0"
+
+redux-saga@^0.14.3:
+  version "0.14.3"
+  resolved "https://registry.yarnpkg.com/redux-saga/-/redux-saga-0.14.3.tgz#28cd2c5b49cf780a1de25875765724150c630513"
 
 redux-thunk@^2.1.0:
   version "2.1.0"

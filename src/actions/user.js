@@ -1,11 +1,14 @@
 // @flow
-import type { Action } from './types';
+import { Action } from './types';
 
-export const SET_USER = 'SET_USER';
+export const SAVE_USER = 'SAVE_USER';
+export const DELETE_USER = 'DELETE_USER';
+export const GET_USER = 'GET_USER';
 
-export function setUser(user: string): Action {
+export function saveUser(user: string, password: string): Action {
   return {
-    type: SET_USER,
-    name: user,
+    type: SAVE_USER,
+    user,
+    password,
   };
 }

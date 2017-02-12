@@ -18,9 +18,7 @@ class Countdown extends Component {
   constructor(props) {
     super(props);
 
-    this.addZero = function (time) {
-      return time < 10 ? `0${time}` : time;
-    };
+    this.addZero = time => time < 10 ? `0${time}` : time;
     const now = new Date().getTime();
     const second = (props.dead - now) / 1000;
     this.state = {

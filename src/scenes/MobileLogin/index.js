@@ -6,33 +6,73 @@ import {
   View,
   Header,
   Title,
+  Text,
   Button,
   Icon,
 } from 'native-base';
 import { Field, reduxForm } from 'redux-form';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 import RenderField from '../../components/RenderField';
 import myTheme from '../../theme/base-theme';
 import s from './styles';
 
+// import request from '../../utils/request';
+import { mobileLogin } from '../../actions/login';
+import { removeError } from '../../actions/global';
+
+import { Login } from '../../actions/types';
 // import InputField from '../../gear/InputField';
 
 const {
   popRoute,
 } = actions;
 
+
+type Data = {
+  values?: Login,
+}
+
+type Props = {
+  popRoute: Function,
+  navigation: Object,
+  state: Object,
+  data: Object,
+  loginAction: Function<Login>,
+  removeError: Function,
+}
+
 class MobileLogin extends Component {
-  static propTypes = {
-    popRoute: PropTypes.func,
-    navigation: PropTypes.shape({
-      key: PropTypes.string,
-    }),
+  constructor() {
+    super();
+
+    this.state = {
+      state: '登录',
+    };
+  }
+
+  componentWillUnmount() {
+    this.props.removeError();
   }
 
   popRoute() {
     this.props.popRoute(this.props.navigation.key);
   }
+
+  login() {
+    const data: Data = this.props.data;
+    console.log(data);
+    if (data.values) {
+      const { phone, password } = data.values;
+      if (phone && password) {
+        this.props.loginAction(data.values);
+      }
+    }
+  }
+
+  props: Props
   render() {
+    const { pending, error } = this.props.state;
     return (
       <Container theme={myTheme}>
         <Header>
@@ -45,26 +85,34 @@ class MobileLogin extends Component {
           <Title>手机登陆</Title>
         </Header>
         <View style={s.container}>
+          <Spinner
+            visible={pending}
+            textContent={'正在注册...'}
+            textStyle={{ color: '#FFF' }}
+          />
           <Field
-            name="realName"
+            name="phone"
             type="numeric"
             component={RenderField}
             label="手机号码"
           />
           <Field
-            name="personCard"
+            name="password"
             type="default"
             component={RenderField}
             label="密码"
+            password
           />
           <View style={s.buttonGroup}>
             <Button
               rounded
               block
               success
+              onPress={() => this.login()}
             >
-              登陆
+              登录
             </Button>
+            <Text style={{ textAlign: 'center', marginTop: 30 }}>{error}</Text>
           </View>
         </View>
       </Container>
@@ -75,11 +123,15 @@ class MobileLogin extends Component {
 function bindActions(dispatch) {
   return {
     popRoute: key => dispatch(popRoute(key)),
+    loginAction: form => dispatch(mobileLogin(form)),
+    removeError: () => dispatch(removeError()),
   };
 }
 
 const mapStateToProps = state => ({
   navigation: state.cardNavigation,
+  state: state.mobileLogin,
+  data: state.form.mobileLogin,
 });
 
 const Final = reduxForm({

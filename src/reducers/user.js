@@ -1,20 +1,31 @@
 import type { Action } from '../actions/types';
-import { SET_USER } from '../actions/user';
+import { SAVE_USER, DELETE_USER } from '../actions/user';
 
 
 export type State = {
-  name: string,
+  user: string,
+  passwrod: string,
 }
 const initialState = {
-  name: 'hello',
+  user: '',
+  password: '',
 };
 
 export default function (state: State = initialState, action: Action): State {
-  if (action.type === SET_USER) {
-    return {
-      ...state,
-      name: action.name,
-    };
+  switch (action.type) {
+    case SAVE_USER:
+      return {
+        ...state,
+        user: action.user,
+        passwrod: action.password,
+      };
+    case DELETE_USER:
+      return {
+        ...state,
+        user: '',
+        passwrod: '',
+      };
+    default:
+      return state;
   }
-  return state;
 }
