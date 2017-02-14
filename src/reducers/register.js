@@ -3,13 +3,13 @@ import { MOBILE_REGISTER, REGISTER_ERROR, REGISTER_FULLFILL } from '../actions/r
 import { REMOVE_ERROR } from '../actions/global';
 
 type State = {
-  registering: boolean,
+  pending: boolean,
   error: string,
   success: boolean,
 }
 
 const initialState: State = {
-  registering: false,
+  pending: false,
   error: '',
   success: false,
 };
@@ -19,25 +19,25 @@ export default function (state: State = initialState, action: Action) {
     case MOBILE_REGISTER:
       return {
         ...state,
-        registering: true,
+        pending: true,
         error: '',
       };
     case REGISTER_ERROR:
       return {
         ...state,
-        registering: false,
+        pending: false,
         error: action.message,
       };
     case REGISTER_FULLFILL:
       return {
         ...state,
-        registering: false,
+        pending: false,
         success: true,
       };
     case REMOVE_ERROR:
       return {
         ...state,
-        registering: false,
+        pending: false,
         error: '',
       };
     default:

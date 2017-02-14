@@ -1,4 +1,4 @@
-export type Form = {
+export type Register = {
   phone: number,
   validCode: number,
   password: any,
@@ -23,7 +23,7 @@ export type Action =
   | { type: 'SMS_TIMING_START', second: number }
   | { type: 'SMS_TIMING_CONTINUE' }
   | { type: 'SMS_TIMING_FINISH' }
-  | { type: 'MOBILE_REGISTER', form: Form}
+  | { type: 'MOBILE_REGISTER', form: Register}
   | { type: 'REGISTER_ERROR', message: string}
   | { type: 'REGISTER_FULLFILL' }
   | { type: 'REMOVE_REGISTER_ERROR' }

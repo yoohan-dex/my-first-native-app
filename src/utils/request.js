@@ -22,7 +22,7 @@ function checkResult(response) {
   throw error;
 }
 export default function request(url, options) {
-  return fetch(`${config.host}/${url}`, options) // eslint-disable-line no-undef
+  return fetch(`${config.host}/driver/${url}`, options) // eslint-disable-line no-undef
     .then(checkStatus)
     .then(parseJSON)
     .then(checkResult)

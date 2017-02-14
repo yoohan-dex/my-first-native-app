@@ -1,9 +1,7 @@
 // @flow
-import React, { Component, PropTypes } from 'react';
-import { AsyncStorage } from 'react-native';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { actions } from 'react-native-navigation-redux-helpers';
-import { getStoredState } from 'redux-persist';
 import {
   Container,
   View,
@@ -15,7 +13,6 @@ import {
 } from 'native-base';
 import Spinner from 'react-native-loading-spinner-overlay';
 
-// import alert from '../../utils/alert';
 import { Field, reduxForm } from 'redux-form';
 
 import renderField from '../../components/RenderField';
@@ -24,27 +21,28 @@ import ButtonForSms from '../../components/ButtonForSms';
 import myTheme from '../../theme/base-theme';
 import s from './styles';
 import { post } from '../../utils/request';
-import { Form } from '../../actions/types';
+import { Register } from '../../actions/types';
 import { mobileRegister } from '../../actions/register';
 import { removeError } from '../../actions/global';
 
 const {
   popRoute,
-  pushRoute,
+  replaceAt,
 } = actions;
 
 type Data = {
-  values?: Form,
+  values?: Register,
 }
 
 type Props = {
   popRoute: Function,
-  pushRoute: Function,
+  replaceAt: Function,
   navigation: Object,
   data: Object<Data>,
   registerAction: Function,
   removeError: Function,
   state: Object,
+  global: Object,
 }
 
 class MobileRegister extends Component {
@@ -53,42 +51,42 @@ class MobileRegister extends Component {
     super();
     this.state = {
       uri: '',
+      transfer: false,
 
     };
 
     this.getSMS = this.getSMS.bind(this);
   }
-
-
-  async componentWillUnmount() {
-    this.props.removeError();
-    try {
-      const state = await getStoredState({storage: AsyncStorage });
-      console.log(state);
-    } catch (error) {
-      // Error retrieving data
-      console.log(error);
+  componentDidUpdate() {
+    const { state, global } = this.props;
+    if (state.success && global.user && !this.state.transfer) {
+      this.toRegisterMessage();
+      this.finishTransfer();
     }
   }
+
+  componentWillUnmount() {
+    this.props.removeError();
+  }
+
 
   getSMS() {
     const { data } = this.props;
     if (data.values && data.values.phone) {
-      post('smsoperation/sendSmsVerificationCode', { phone_num: data.values.phone }).then(
-
-      console.log,
-
-      );
+      post('smsoperation/sendSmsVerificationCode', { phone_num: data.values.phone });
     }
+  }
+  finishTransfer() {
+    this.setState(pre => ({ transfer: !pre.transfer }));
   }
   props: Props
 
-  popRoute() {
-    this.props.popRoute(this.props.navigation.key);
+  toRegisterMessage() {
+    this.props.replaceAt('mobile-register', { key: 'register-message' }, this.props.navigation.key);
   }
 
-  pushRoute(route) {
-    this.props.pushRoute({ key: route }, this.props.navigation.key);
+  popRoute() {
+    this.props.popRoute(this.props.navigation.key);
   }
 
   mobileRegister() {
@@ -102,8 +100,8 @@ class MobileRegister extends Component {
   }
 
   render() {
-    const { registering, error } = this.props.state;
-    
+    const { pending, error } = this.props.state;
+
     return (
       <Container theme={myTheme}>
         <Header>
@@ -118,7 +116,7 @@ class MobileRegister extends Component {
         </Header>
         <View style={s.container}>
           <Spinner
-            visible={registering}
+            visible={pending}
             textContent={'正在注册...'}
             textStyle={{ color: '#FFF' }}
           />
@@ -150,7 +148,6 @@ class MobileRegister extends Component {
               block
               success
               onPress={() => {
-                console.log(this.props);
                 this.mobileRegister();
               }}
             >
@@ -164,7 +161,7 @@ class MobileRegister extends Component {
   }
 }
 
-const validate = (values: Form) => {
+const validate = (values: Register) => {
   const errors = {};
   const { phone, validCode, password } = values;
   if (!phone) {
@@ -184,9 +181,9 @@ const validate = (values: Form) => {
 function bindActions(dispatch) {
   return {
     popRoute: key => dispatch(popRoute(key)),
-    pushRoute: (route, key) => dispatch(pushRoute(route, key)),
     registerAction: form => dispatch(mobileRegister(form)),
     removeError: () => dispatch(removeError()),
+    replaceAt: (routeKey, route, key) => dispatch(replaceAt(routeKey, route, key)),
   };
 }
 
@@ -194,6 +191,7 @@ const mapStateToProps = state => ({
   navigation: state.cardNavigation,
   data: state.form.register,
   state: state.register,
+  global: state.global,
 });
 const component = reduxForm({
   form: 'register',

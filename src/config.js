@@ -1,3 +1,3 @@
 export default {
-  host: 'https://www.dashengpinche.com/dashengpinche',
+  host: 'http://www.dashengpinche.com/dashengpinche',
 };

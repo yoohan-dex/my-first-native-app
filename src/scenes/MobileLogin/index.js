@@ -26,6 +26,7 @@ import { Login } from '../../actions/types';
 
 const {
   popRoute,
+  replaceAt,
 } = actions;
 
 
@@ -37,9 +38,11 @@ type Props = {
   popRoute: Function,
   navigation: Object,
   state: Object,
+  global: Object,
   data: Object,
   loginAction: Function<Login>,
   removeError: Function,
+  replaceAt: Function,
 }
 
 class MobileLogin extends Component {
@@ -47,16 +50,36 @@ class MobileLogin extends Component {
     super();
 
     this.state = {
+      transfer: false,
       state: '登录',
     };
+
+    this.toIndex = this.toIndex.bind(this);
+  }
+
+
+  componentDidUpdate() {
+    const { state, global } = this.props;
+    if (state.success && global.user && !this.state.transfer) {
+      this.toIndex();
+      this.finishTransfer();
+    }
   }
 
   componentWillUnmount() {
     this.props.removeError();
   }
 
+  finishTransfer() {
+    this.setState(pre => ({ transfer: !pre.transfer }));
+  }
+
   popRoute() {
     this.props.popRoute(this.props.navigation.key);
+  }
+
+  toIndex() {
+    this.props.replaceAt('mobile-login', { key: 'register-message' }, this.props.navigation.key);
   }
 
   login() {
@@ -65,6 +88,7 @@ class MobileLogin extends Component {
     if (data.values) {
       const { phone, password } = data.values;
       if (phone && password) {
+        console.log(data.values);
         this.props.loginAction(data.values);
       }
     }
@@ -87,7 +111,7 @@ class MobileLogin extends Component {
         <View style={s.container}>
           <Spinner
             visible={pending}
-            textContent={'正在注册...'}
+            textContent={'正在登录...'}
             textStyle={{ color: '#FFF' }}
           />
           <Field
@@ -125,6 +149,7 @@ function bindActions(dispatch) {
     popRoute: key => dispatch(popRoute(key)),
     loginAction: form => dispatch(mobileLogin(form)),
     removeError: () => dispatch(removeError()),
+    replaceAt: (routeKey, route, key) => dispatch(replaceAt(routeKey, route, key)),
   };
 }
 
@@ -132,6 +157,7 @@ const mapStateToProps = state => ({
   navigation: state.cardNavigation,
   state: state.mobileLogin,
   data: state.form.mobileLogin,
+  global: state.global,
 });
 
 const Final = reduxForm({

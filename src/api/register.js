@@ -1,4 +1,4 @@
-import { postDriver } from '../utils/request';
+import request, { postDriver } from '../utils/request';
 import { Form } from '../actions/types';
 
 export function mobileRegister(form: Form) {
@@ -7,4 +7,8 @@ export function mobileRegister(form: Form) {
     sms_code: form.validCode,
     password: form.password,
   });
+}
+
+export function getDriverInfo() {
+  return request('getDriverInfo');
 }

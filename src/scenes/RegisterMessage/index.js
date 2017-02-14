@@ -3,24 +3,15 @@ import {
   Container,
   Header,
   Title,
-  Content,
-  Button,
-  View,
-  Text,
-  Input,
-  InputGroup,
 } from 'native-base';
 import { View as NativeView, ScrollView } from 'react-native';
-import { Field, reduxForm } from 'redux-form';
-import ActionSheet from 'react-native-actionsheet';
+import { reduxForm } from 'redux-form';
+import { connect } from 'react-redux';
 
 import PersonCardMessage from '../../modules/PersonCardMessage';
 import VehicleMessage from '../../modules/VehicleMessage';
 
-import renderField from '../../components/RenderField';
 import StepIndicator from '../../components/StepIndicator';
-import PhotoPickerGroup from '../../components/PhotoPickerGroup';
-import imagePicker from '../../utils/imagePicker';
 
 import mytheme from '../../theme/base-theme';
 import s from './styles';
@@ -97,7 +88,6 @@ class RegisterMessage extends Component {
     this.setState({
       step: this.state.step + 1,
     }, this.scrollToTop);
-    console.log(this.props);
   }
 
   preStep() {
@@ -107,7 +97,6 @@ class RegisterMessage extends Component {
   }
 
   render() {
-    console.log('front', this.state.frontImage);
     return (
       <Container theme={mytheme}>
         <Header>
@@ -151,31 +140,42 @@ class RegisterMessage extends Component {
   }
 }
 
+function bindActions(dispatch) {
+  return {
+    popRoute: key => dispatch(popRoute(key)),
+    registerAction: form => dispatch(mobileRegister(form)),
+    removeError: () => dispatch(removeError()),
+    replaceAt: (routeKey, route, key) => dispatch(replaceAt(routeKey, route, key)),
+  };
+}
+
+const mapStateToProps = state => ({
+  navigation: state.cardNavigation,
+  data: state.form.register,
+  state: state.register,
+  global: state.global,
+});
+
 const validate = (values) => {
   const errors = {};
-  const { realName, personCard } = values;
+  const { realName, personCard, carNumber, carBrand } = values;
   if (!realName) {
     errors.realName = 'Required';
   } else if (!personCard) {
     errors.personCard = 'Required';
   } else if (personCard.length !== 15 && personCard.length !== 18) {
     errors.personCard = 'Must be 15 characters or less';
+  } else if (!carBrand) {
+    errors.carBrand = 'Required';
+  } else if (!carNumber) {
+    errors.carNumber = 'Required';
   }
   return errors;
 };
 
-export default reduxForm({
+const component = reduxForm({
   form: 'RegisterMessage',
   validate,
 })(RegisterMessage);
-// <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-//             <Button onPress={this.show.bind(this)}>SHOW</Button>
 
-//             <ActionSheet 
-//               ref={(o) => this.ActionSheet = o}
-//               title="确认要退出登录吗？"
-//               options={buttons}
-//               cancelButtonIndex={CANCEL_INDEX}
-//               destructiveButtonIndex={DESTRUCTIVE_INDEX}
-//             />
-//           </View>
+export default connect(bindActions, mapStateToProps)(component);

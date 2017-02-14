@@ -7,3 +7,4 @@ export function mobileLogin(form: Login) {
     password: form.password,
   });
 }
+
