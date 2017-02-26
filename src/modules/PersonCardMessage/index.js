@@ -2,9 +2,12 @@ import React from 'react';
 import { View, TouchableNativeFeedback, Text, ScrollView } from 'react-native';
 import { Field } from 'redux-form';
 import { Button, Picker } from 'native-base';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 import renderField from '../../components/RenderField';
 import PhotoPickerGroup from '../../components/PhotoPickerGroup';
+
+type Type = 'carImage' | 'idcardImage' | 'idcardOppositeImage' | 'drivinglicenceImage' | 'vehiclelicenceImage';
 
 type Props = {
   fetchFront: (uri: Object) => void,
@@ -12,6 +15,8 @@ type Props = {
   frontImage: Object,
   backImage: Object,
   nextStep: Function,
+  uploadImage: Function<Type>,
+  pending: boolean,
 };
 
 
@@ -22,9 +27,16 @@ const PersonCardMessage = (props: Props) => {
     frontImage,
     backImage,
     nextStep,
+    uploadImage,
+    pending,
   } = props;
   return (
     <View>
+      <Spinner
+        visible={pending}
+        textContent={'正在上传...'}
+        textStyle={{ color: '#FFF' }}
+      />
       <Field
         name="realName"
         type="default"
@@ -42,12 +54,14 @@ const PersonCardMessage = (props: Props) => {
         defaultText="正面身份证照"
         title="上传正面身份证"
         fetch={fetchFront}
+        uploadImage={uploadImage('idcardImage')}
       />
       <PhotoPickerGroup
         source={backImage}
         defaultText="反面身份证照"
         title="上传反面身份证"
         fetch={fetchBack}
+        uploadImage={uploadImage('idcardOppositeImage')}
       />
       <View style={{ marginVertical: 20 }}>
         <Button

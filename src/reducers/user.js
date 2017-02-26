@@ -4,7 +4,7 @@ import { SAVE_USER, DELETE_USER } from '../actions/user';
 
 export type State = {
   user: string,
-  passwrod: string,
+  password: string,
 }
 const initialState = {
   user: '',
@@ -17,13 +17,13 @@ export default function (state: State = initialState, action: Action): State {
       return {
         ...state,
         user: action.user,
-        passwrod: action.password,
+        password: action.password,
       };
     case DELETE_USER:
       return {
         ...state,
         user: '',
-        passwrod: '',
+        password: '',
       };
     default:
       return state;

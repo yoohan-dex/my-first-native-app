@@ -11,6 +11,7 @@ import RegisterMessage from './scenes/RegisterMessage';
 import ItemDetial from './scenes/ItemDetail';
 import Home from './scenes/Home';
 import Wallet from './scenes/Wallet';
+import SuccessPage from './scenes/SuccessPage';
 
 const {
   popRoute,
@@ -29,6 +30,12 @@ class AppNavigator extends Component {
     }),
   }
 
+  constructor() {
+    super();
+
+    this._renderScene = this._renderScene.bind(this);
+  }
+
   componentDidMount() {
     BackAndroid.addEventListener('hardwareBackPress', () => {
       const routes = this.props.navigation.routes;
@@ -40,12 +47,16 @@ class AppNavigator extends Component {
       this.props.popRoute(this.props.navigation.key);
       return true;
     });
+
+    console.log('haveLogin?????', this.props.haveLogin);
   }
 
   popRoute() {
     this.props.popRoute();
   }
-
+  props: {
+    haveLogin: boolean,
+  }
   _renderScene({ scene }) { // eslint-disable-line class-methods-use-this
     switch (scene.route.key) {
       case 'home':
@@ -62,8 +73,10 @@ class AppNavigator extends Component {
         return <ItemDetial />;
       case 'wallet':
         return <Wallet />;
+      case 'upload-message':
+        return <SuccessPage />;
       default:
-        return <Login />;
+        return this.props.haveLogin ? <Home /> : <Login />;
     }
   }
   render() {

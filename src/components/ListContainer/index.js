@@ -13,6 +13,7 @@ type Props = {
   dataArray: Array,
   pushRoute: Function,
   navigation: Object,
+  getItemDetail: (id: number) => void,
 }
 
 class CurrentContainer extends Component {
@@ -25,7 +26,10 @@ class CurrentContainer extends Component {
   props: Props
 
   handlePress(id) {
-    this.props.pushRoute({ key: 'item-detail', id }, this.props.navigation.key);
+    return () => {
+      this.props.getItemDetail(id);
+      this.props.pushRoute({ key: 'item-detail', id }, this.props.navigation.key);
+    };
   }
 
   renderRow(data, section, row) {
@@ -36,7 +40,8 @@ class CurrentContainer extends Component {
         time={data.time}
         end={data.end}
         state={data.state}
-        handlePress={this.handlePress}
+        handlePress={this.handlePress(data.id)}
+        dead={data.dead}
       />
     );
   }

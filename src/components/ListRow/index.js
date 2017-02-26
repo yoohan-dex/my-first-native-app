@@ -9,6 +9,14 @@ import {
 
 import ItemText from '../../gear/ItemText';
 import Countdown from '../Countdown';
+import {
+  ONGOING,
+  CONFIRM_RECEIVE,
+  CONFIRM_ARRIVAL,
+  ORDER_ISSUE,
+  ORDER_FULFILLED,
+  ORDER_ISSUE_OVER,
+} from '../../constants/orderState';
 
 type Props = {
   start: string,
@@ -16,30 +24,35 @@ type Props = {
   time: string,
   state: 'ongoing' | 'issue' | 'checking' | 'driving',
   handlePress: Function,
+  dead: string,
 }
 
-const Ongoing = () => <Countdown
-  dead={new Date().getTime() + 10000000}
+const Ongoing = ({ dead }) => <Countdown
+  dead={dead}
   style={{
     fontWeight: 'bold',
     fontSize: 22,
   }}
 />;
 
-const State = props => <Text style={{ fontWeight: 'bold', fontSize: 22, textAlign: 'center', alignSelf: 'center' }}>{props.children}</Text>;
-const Current = ({ start, end, time, handlePress, state }: Props) => {
+const State = props => <Text style={{ fontWeight: 'bold', fontSize: 18, textAlign: 'center', alignSelf: 'center', color: '#555' }}>{props.children}</Text>;
+const Current = ({ start, end, time, handlePress, state, dead }: Props) => {
   const parseState = () => {
+    console.log('the state is : ', state);
     switch (state) {
-      case 'ongoing':
-        return <Ongoing />;
-      case 'checking':
+      case ONGOING:
+        return <Ongoing dead={dead} />;
+      case CONFIRM_ARRIVAL:
         return <State>等待乘客确认订单</State>;
-      case 'driving':
+      case CONFIRM_RECEIVE:
         return <State>已载到乘客</State>;
-      case 'issue':
+      case ORDER_ISSUE:
         return <State>纠纷处理中</State>;
+      case ORDER_FULFILLED:
+      case ORDER_ISSUE_OVER:
+        return <State>订单完成</State>;
       default:
-        return <Ongoing />;
+        return <Ongoing dead={dead} />;
     }
   };
 
@@ -55,17 +68,14 @@ const Current = ({ start, end, time, handlePress, state }: Props) => {
           <ItemText text={`${time} 出发`} icon="schedule" color="#F17F42" />
         </Col>
         <Col size={40} style={{ paddingVertical: 20, paddingHorizontal: 10, justifyContent: 'center' }}>
-          { state === 'ongoing'
-          ? <Grid>
-            <Row size={50} style={{ justifyContent: 'center' }}>
-              <Text style={{ fontSize: 20, fontWeight: 'bold' }}>出车倒计时</Text>
-            </Row>
+          <Grid>
+            { state === ONGOING ? <Row size={50} style={{ justifyContent: 'center' }}>
+              <Text style={{ fontSize: 16, color: '#444' }}>出车倒计时</Text>
+            </Row> : <Row size={25} /> }
             <Row size={50} style={{ justifyContent: 'center' }}>
               {parseState()}
             </Row>
           </Grid>
-          : parseState()
-        }
         </Col>
       </Grid>
     </CardItem>
@@ -73,4 +83,3 @@ const Current = ({ start, end, time, handlePress, state }: Props) => {
 };
 
 export { Current };
-

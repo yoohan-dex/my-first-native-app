@@ -1,3 +1,5 @@
+import { Platform } from 'react-native';
+
 export default {
-  host: 'http://www.dashengpinche.com/dashengpinche',
+  host: `${Platform.OS === 'ios' ? 'https' : 'http'}://www.dashengpinche.com/dashengpinche`,
 };

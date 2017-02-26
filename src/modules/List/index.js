@@ -1,42 +1,20 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Animated, Text } from 'react-native';
-import { TabViewAnimated, TabBarTop, TabBar } from 'react-native-tab-view';
+import { Animated, Text } from 'react-native';
+import { TabViewAnimated, TabBar } from 'react-native-tab-view';
 
+import styles from './styles';
 import container from '../../components/ListContainer';
 
 const {
   Current,
 } = container;
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    margin: 0,
-  },
-  page: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  tab: {
-    backgroundColor: '#52616a',
-    height: 56,
-  },
-  tablabel: {
-    backgroundColor: 'transparent',
-    color: 'white',
-    margin: 8,
-  },
-  indicator: {
-    backgroundColor: 'white',
-    position: 'absolute',
-    left: 0,
-    bottom: 0,
-    right: 0,
-    height: 4,
-  },
-});
-
+type Props = {
+  unfulfilled: Object[],
+  fulfilled: Object[],
+  cancelled: Object[],
+  getItemDetail: (id: number) => void,
+}
 
 class List extends Component {
   constructor() {
@@ -61,7 +39,7 @@ class List extends Component {
   handleChangeTab(index) {
     this.setState({ index });
   }
-
+  props: Props
   renderLabel(scene) {
     const label = this.getLabelText(scene);
     if (typeof label !== 'string') {
@@ -96,11 +74,26 @@ class List extends Component {
   renderScene = ({ route }) => {
     switch (route.key) {
       case '1':
-        return <Current dataArray={this.props.rows} />;
+        return this.props.unfulfilled ?
+          <Current
+            dataArray={this.props.unfulfilled}
+            getItemDetail={this.props.getItemDetail}
+          /> :
+          undefined;
       case '2':
-        return <Current dataArray={this.props.rows} />;
+        return this.props.unfulfilled ?
+          <Current
+            dataArray={this.props.unfulfilled}
+            getItemDetail={this.props.getItemDetail}
+          /> :
+          undefined;
       case '3':
-        return <Current dataArray={this.props.rows} />;
+        return this.props.unfulfilled ?
+          <Current
+            dataArray={this.props.unfulfilled}
+            getItemDetail={this.props.getItemDetail}
+          /> :
+          undefined;
       default:
         return null;
     }

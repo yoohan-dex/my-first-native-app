@@ -14,6 +14,15 @@ import {
   View,
 } from 'native-base';
 
+import { connect } from 'react-redux';
+import {
+  getWaiting,
+  robItem,
+  getUnfulfilled,
+  getItemDetail as getDetail,
+} from '../../actions/carList';
+import { State } from '../../reducers/carList';
+
 import Current from '../../modules/Current';
 import List from '../../modules/List';
 import Me from '../../modules/Me';
@@ -23,37 +32,76 @@ import myTheme from '../../theme/base-theme';
 import homemock from '../../mock/home';
 import listmock from '../../mock/list';
 
+import { changeHomeState } from '../../actions/home';
+
+type Props = {
+  getWaiting: () => void,
+  robItem: (id: number) => void,
+  carList: State,
+  home: { tab: string },
+  getUnfulfilled: () => void,
+  getItemDetail: (id: number) => void,
+  changeHomeState: (tab: 'home' | 'list' | 'account') => void,
+}
 
 class Home extends Component {
-  constructor() {
-    super();
-    this.state = {
-      activeTab: 'home',
-      home: <Current rows={homemock} />,
-      list: <List rows={listmock} />,
-      account: <Me />,
-    };
+  constructor(props) {
+    super(props);
 
     this.renderTitle = this.renderTitle.bind(this);
     this.renderContent = this.renderContent.bind(this);
+    this.robItem = this.robItem.bind(this);
+  }
+  componentDidMount() {
+    this.props.getWaiting();
+    this.props.getUnfulfilled();
   }
 
+  componentWillUpdate(nextProps) {
+    if (nextProps.home.tab === 'home' && this.props.home.tab !== 'home') {
+      this.props.getWaiting();
+    } else if (nextProps.home.tab === 'list' && this.props.home.tab !== 'list') {
+      this.props.getUnfulfilled();
+    }
+  }
+
+  robItem(id) {
+    this.props.robItem(id);
+  }
+
+  props: Props
   renderContent() {
-    const { home, list, account } = this.state;
-    switch (this.state.activeTab) {
+    const { list, robbing, state, unfulfilled, message } = this.props.carList;
+    const { getItemDetail } = this.props;
+    switch (this.props.home.tab) {
       case 'home':
-        return home;
+        return list ?
+          <Current
+            rows={list}
+            state={state}
+            robbing={robbing}
+            robItem={this.robItem}
+          /> :
+          <Text style={{ textAlign: 'center', color: '#444', marginTop: 30 }}>{message}</Text>;
       case 'list':
-        return list;
+        return (
+          <List
+            rows={listmock}
+            getItemDetail={getItemDetail}
+            unfulfilled={unfulfilled}
+            fulfilled
+            cancelled
+          />
+        );
       case 'account':
-        return account;
+        return <Me />;
       default:
-        return home;
+        return undefined;
     }
   }
 
   renderTitle() {
-    switch (this.state.activeTab) {
+    switch (this.props.home.tab) {
       case 'home':
         return '抢单';
       case 'list':
@@ -65,45 +113,41 @@ class Home extends Component {
     }
   }
   render() {
-    const list = this.state.activeTab === 'list';
+    const { tab } = this.props.home;
+    const { changeHomeState: setState } = this.props;
+    const list = tab === 'list';
     const android = Platform.OS === 'android';
     return (
       <Container theme={myTheme}>
         {list && android ? undefined : <Header style={{ shadowOpacity: 0 }}>
           <Title>{this.renderTitle()}</Title>
         </Header> }
-        {this.state.activeTab === 'home' || this.state.activeTab === 'account' ? <ScrollView style={{ backgroundColor: '#eee' }}>
+        {tab === 'home' || tab === 'account' ? <ScrollView style={{ backgroundColor: '#eee' }}>
           {this.renderContent()}
         </ScrollView> : undefined }
-        {this.state.activeTab === 'list'
+        {tab === 'list'
         ? <View>{this.renderContent()}</View>
         : undefined}
         <Footer>
           <FooterTab>
             <Button
-              active={this.state.activeTab === 'home'}
-              onPress={() => this.setState({
-                activeTab: 'home',
-              })}
+              active={tab === 'home'}
+              onPress={() => setState('home')}
             >
               <Badge>2</Badge>
                 抢单
                 <Icon name="home" />
             </Button>
             <Button
-              active={this.state.activeTab === 'list'}
-              onPress={() => this.setState({
-                activeTab: 'list',
-              })}
+              active={tab === 'list'}
+              onPress={() => setState('list')}
             >
                 订单
                 <Icon name="list" />
             </Button>
             <Button
-              active={this.state.activeTab === 'account'}
-              onPress={() => this.setState({
-                activeTab: 'account',
-              })}
+              active={tab === 'account'}
+              onPress={() => setState('account')}
             >
                 我
                 <Icon name="account-box" />
@@ -115,4 +159,21 @@ class Home extends Component {
   }
 }
 
-export default Home;
+function bindActions(dispatch) {
+  return {
+    getWaiting: () => dispatch(getWaiting()),
+    robItem: index => dispatch(robItem(index)),
+    getUnfulfilled: () => dispatch(getUnfulfilled()),
+    getItemDetail: id => dispatch(getDetail(id)),
+    changeHomeState: tab => dispatch(changeHomeState(tab)),
+  };
+}
+
+function mapStateToProps(state) {
+  return {
+    carList: state.carList,
+    home: state.home,
+  };
+}
+
+export default connect(mapStateToProps, bindActions)(Home);

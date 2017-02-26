@@ -7,6 +7,9 @@ import forSMS from './forSMS';
 import register from './register';
 import mobileLogin from './login';
 import global from './global';
+import carList from './carList';
+import action from './action';
+import home from './home';
 
 export default combineReducers({
   form: formReducer,
@@ -16,4 +19,7 @@ export default combineReducers({
   register,
   mobileLogin,
   global,
+  carList,
+  action,
+  home,
 });

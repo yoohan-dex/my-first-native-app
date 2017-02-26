@@ -22,16 +22,16 @@ class Countdown extends Component {
     const now = new Date().getTime();
     const second = (props.dead - now) / 1000;
     this.state = {
-      second,
+      second: second > 0 ? second : 0,
     };
   }
 
 
   componentDidMount() {
     this.timer = BackgroundTimer.setInterval(() => this.setState(pre => ({
-      second: pre.second - 1,
+      second: pre.second > 0 ? pre.second - 1 : 0,
     }), () => {
-      if (this.state.second <= 0) {
+      if (this.state.second === 0) {
         BackgroundTimer.clearInterval(this.timer);
       }
     }), 1000);

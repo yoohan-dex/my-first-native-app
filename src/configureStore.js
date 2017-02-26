@@ -30,7 +30,8 @@ export default function configureStore(onCompletion: () => void) {
   );
 
   const store = createStore(reducer, enhancer, autoRehydrate());
-  persistStore(store, { whitelist: 'global', storage: AsyncStorage }, onCompletion);
+
+  persistStore(store, { whitelist: ['user', 'global'], storage: AsyncStorage }, onCompletion);
 
   return store;
 }

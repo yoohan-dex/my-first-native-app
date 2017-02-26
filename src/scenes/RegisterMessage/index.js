@@ -7,24 +7,48 @@ import {
 import { View as NativeView, ScrollView } from 'react-native';
 import { reduxForm } from 'redux-form';
 import { connect } from 'react-redux';
+import request from '../../utils/request';
+import {
+  uploadImage,
+  getAreaList,
+  uploadCar,
+  uploadPersonalCard,
+  setArea,
+} from '../../actions/register';
+
+import {
+  PersonCard,
+  CarInfo,
+} from '../../actions/types';
 
 import PersonCardMessage from '../../modules/PersonCardMessage';
 import VehicleMessage from '../../modules/VehicleMessage';
+import SuccessMessage from '../../modules/SuccessMessage';
 
 import StepIndicator from '../../components/StepIndicator';
 
 import mytheme from '../../theme/base-theme';
 import s from './styles';
 
-type State = {
-    step: number,
-    frontImage: Object,
-    backImage: Object,
-    certification: Object,
-    licence: Object,
-    car: Object,
-  }
+type Type = 'carImage' | 'idcardImage' | 'idcardOppositeImage' | 'drivinglicenceImage' | 'vehiclelicenceImage';
 
+type PersonData = {
+  values?: PersonCard,
+}
+
+type CarData = {
+  values?: CarInfo,
+}
+
+type Props = {
+  state: Object,
+  uploadImage: Function<Type>,
+  getAreaList: Function,
+  data: Object<PersonCard|CarData>,
+  uploadCar: Function<Object<CarInfo>>,
+  uploadPerson: Function<Object<PersonCard>>,
+  setArea: (id: string) => void,
+}
 class RegisterMessage extends Component {
   constructor(props) {
     super(props);
@@ -44,10 +68,15 @@ class RegisterMessage extends Component {
     this.setCar = this.setCar.bind(this);
     this.setCertification = this.setCertification.bind(this);
     this.setLicence = this.setLicence.bind(this);
+    this._render = this._render.bind(this);
+    this.transfer = this.transfer.bind(this);
   }
 
-  state: State
+  componentDidMount() {
+    this.props.getAreaList();
+  }
 
+  // state: State
   setFrontImage(uri) {
     this.setState({
       frontImage: uri,
@@ -75,7 +104,32 @@ class RegisterMessage extends Component {
     });
   }
 
+  props: Props
   scrollView: ScrollView
+
+  uploadPerson(callback) {
+    const data: PersonData = this.props.data;
+    if (data.values && !data.syncErrors.realName && !data.syncErrors.personCard) {
+      const { personCard, realName } = data.values;
+      if (realName && personCard) {
+        this.props.uploadPerson({ name: realName, id: personCard });
+        callback();
+      }
+    }
+  }
+
+  uploadCar(callback) {
+    const data: CarData = this.props.data;
+    const { selectedArea } = this.props.state;
+    if (data.values && !data.syncErrors) {
+      console.log(data.values);
+      const { carNumber: id, carBrand: brand } = data.values;
+      if (id && brand && selectedArea) {
+        this.props.uploadCar({ id, brand, selectedArea });
+        callback();
+      }
+    }
+  }
 
   scrollToTopImmiately() {
     this.ScrollView.scrollTo({ y: 0, animated: false });
@@ -84,10 +138,18 @@ class RegisterMessage extends Component {
     this.ScrollView.scrollTo({ y: 0 });
   }
 
-  nextStep() {
+  transfer() {
     this.setState({
       step: this.state.step + 1,
     }, this.scrollToTop);
+  }
+
+  nextStep() {
+    if (this.state.step === 0) {
+      this.uploadPerson(this.transfer);
+    } else if (this.state.step === 1) {
+      this.uploadCar(this.transfer);
+    }
   }
 
   preStep() {
@@ -96,7 +158,45 @@ class RegisterMessage extends Component {
     }, this.scrollToTopImmiately);
   }
 
+  _render() {
+    const { pending, areaList } = this.props.state;
+    switch (this.state.step) {
+      case 0:
+        return (
+          <PersonCardMessage
+            nextStep={this.nextStep}
+            fetchBack={this.setBackImage}
+            fetchFront={this.setFrontImage}
+            backImage={this.state.backImage}
+            frontImage={this.state.frontImage}
+            uploadImage={this.props.uploadImage}
+            pending={pending}
+          />
+        );
+      case 1:
+        return (
+          <VehicleMessage
+            nextStep={this.nextStep}
+            preStep={this.preStep}
+            fetchCar={this.setCar}
+            fetchCertification={this.setCertification}
+            fetchLicence={this.setLicence}
+            car={this.state.car}
+            certification={this.state.certification}
+            licence={this.state.licence}
+            uploadImage={this.props.uploadImage}
+            pending={pending}
+            areaList={areaList}
+            onAreaChange={this.props.setArea}
+          />
+        );
+      default:
+        return <SuccessMessage />;
+    }
+  }
+
   render() {
+    const { pending, areaList } = this.props.state;
     return (
       <Container theme={mytheme}>
         <Header>
@@ -113,26 +213,10 @@ class RegisterMessage extends Component {
         >
           <StepIndicator active={this.state.step} />
           <NativeView style={s.formGroup}>
-            {this.state.step === 0
-              ? <PersonCardMessage
-                nextStep={this.nextStep}
-                fetchBack={this.setBackImage}
-                fetchFront={this.setFrontImage}
-                backImage={this.state.backImage}
-                frontImage={this.state.frontImage}
-              />
-              : <VehicleMessage
-                getImageFromUser={() => this.getImageFromUser()}
-                nextStep={this.nextStep}
-                preStep={this.preStep}
-                fetchCar={this.setCar}
-                fetchCertification={this.setCertification}
-                fetchLicence={this.setLicence}
-                car={this.state.car}
-                certification={this.state.certification}
-                licence={this.state.licence}
-              />
+            {
+              this._render()
             }
+
           </NativeView>
         </ScrollView>
       </Container>
@@ -142,16 +226,21 @@ class RegisterMessage extends Component {
 
 function bindActions(dispatch) {
   return {
-    popRoute: key => dispatch(popRoute(key)),
-    registerAction: form => dispatch(mobileRegister(form)),
-    removeError: () => dispatch(removeError()),
-    replaceAt: (routeKey, route, key) => dispatch(replaceAt(routeKey, route, key)),
+    // popRoute: key => dispatch(popRoute(key)),
+    // registerAction: form => dispatch(mobileRegister(form)),
+    getAreaList: () => dispatch(getAreaList()),
+    uploadImage: (type: Type) => (uri: string) => dispatch(uploadImage(type, uri)),
+    uploadPerson: (form: Object<PersonCard>) => dispatch(uploadPersonalCard(form)),
+    uploadCar: (form: Object<CarInfo>) => dispatch(uploadCar(form)),
+    setArea: (id: number) => dispatch(setArea(id)),
+    // removeError: () => dispatch(removeError()),
+    // replaceAt: (routeKey, route, key) => dispatch(replaceAt(routeKey, route, key)),
   };
 }
 
 const mapStateToProps = state => ({
   navigation: state.cardNavigation,
-  data: state.form.register,
+  data: state.form.registerMessage,
   state: state.register,
   global: state.global,
 });
@@ -174,8 +263,8 @@ const validate = (values) => {
 };
 
 const component = reduxForm({
-  form: 'RegisterMessage',
+  form: 'registerMessage',
   validate,
 })(RegisterMessage);
 
-export default connect(bindActions, mapStateToProps)(component);
+export default connect(mapStateToProps, bindActions)(component);

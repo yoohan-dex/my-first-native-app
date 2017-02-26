@@ -1,7 +1,11 @@
-import { mobileRegister } from './register';
+import * as mobileRgister from './register';
 import { mobileLogin } from './mobileLogin';
+import * as car from './car';
+import * as action from './action';
 
 export default {
-  mobileRegister,
   mobileLogin,
+  mobileRgister,
+  car,
+  action,
 };

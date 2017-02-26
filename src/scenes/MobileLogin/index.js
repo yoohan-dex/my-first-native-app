@@ -10,6 +10,7 @@ import {
   Button,
   Icon,
 } from 'native-base';
+
 import { Field, reduxForm } from 'redux-form';
 import Spinner from 'react-native-loading-spinner-overlay';
 
@@ -60,7 +61,11 @@ class MobileLogin extends Component {
 
   componentDidUpdate() {
     const { state, global } = this.props;
-    if (state.success && global.user && !this.state.transfer) {
+    // if (global.user && !this.state.transfer) {
+    //   this.toIndex();
+    //   this.finishTransfer();
+    // }
+    if (state.success && !this.state.transfer) {
       this.toIndex();
       this.finishTransfer();
     }

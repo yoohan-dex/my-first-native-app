@@ -5,6 +5,7 @@ function checkStatus(response) {
     return response;
   }
   const error = new Error(response.statusText);
+  console.log(response);
   error.response = response;
   throw error;
 }
@@ -18,21 +19,31 @@ function checkResult(response) {
     return response.resultParm;
   }
   const error = new Error(response.resultInfo);
+  console.log('error: ', response);
   error.response = response;
   throw error;
 }
-export default function request(url, options) {
-  return fetch(`${config.host}/driver/${url}`, options) // eslint-disable-line no-undef
+export default (type = 'driver') => function request(url, options) {
+  return fetch(`${config.host}/${type}/${url}`, options) // eslint-disable-line no-undef
     .then(checkStatus)
     .then(parseJSON)
     .then(checkResult)
-    .then(data => ({ data }))
-    .catch(err => ({ err }));
+    .then(data => ({ data }));
+    // .catch(err => ({ err }));
+};
+
+export function get(url, options) {
+  return fetch(`${config.host}/${url}`, options) // eslint-disable-line no-undef
+    .then(checkStatus)
+    .then(parseJSON)
+    .then(checkResult)
+    .then(data => ({ data }));
+    // .catch(err => ({ err }));
 }
 const serializeJSON = data => Object.keys(data).map(keyName => `${encodeURIComponent(keyName)}=${encodeURIComponent(data[keyName])}`).join('&');
 
-export function post(url, parm) {
-  return fetch(`${config.host}/${url}`, { // eslint-disable-line no-undef
+export const post = type => (url, parm) =>
+  fetch(`${config.host}/${type}/${url}`, { // eslint-disable-line no-undef
     method: 'POST',
     headers: {
       Accept: 'application/json',
@@ -44,7 +55,22 @@ export function post(url, parm) {
   .then(parseJSON)
   .then(checkResult)
   .then(data => ({ data }))
-  .catch(err => ({ err }));
+  // .catch(err => ({ err }));
+;
+
+export function upload(url, formData) {
+  return fetch(`${config.host}/${url}`, { // eslint-disable-line no-undef
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'multipart/form-data',
+    },
+    body: formData,
+  })
+  .then(checkStatus)
+  .then(parseJSON)
+  .then(checkResult)
+  .then(data => ({ data }));
 }
 
 export function postDriver(url, parm) {

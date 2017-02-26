@@ -1,5 +1,5 @@
 // @flow
-import React from 'react';
+import React, { Component } from 'react';
 import {
   View,
   Text,
@@ -27,51 +27,82 @@ type Props = {
   fetch: (source: Object) => void,
   source: Object,
   defaultText: string,
+  uploadImage: Function<string>,
 }
-const PhotoPickerGroup = (props: Props) => {
-  const { title, fetch, source, defaultText } = props;
-  const switchAction = (index) => {
+class PhotoPickerGroup extends Component {
+
+  constructor() {
+    super();
+
+    this.state = {
+      source: '',
+    };
+
+    this.switchAction = this.switchAction.bind(this);
+  }
+
+  componentWillUpdate(nextProps) {
+    const { source } = nextProps;
+    if (source.uri !== this.state.source.uri) {
+      this.setState({
+        source,
+      }, () => {
+        if (source.uri) {
+          this.props.uploadImage(source);
+        }
+      });
+    }
+  }
+
+  switchAction(index) {
+    const { fetch } = this.props;
     if (index === CHOOSE_FROM_GALLARY) {
       launchGallery(fetch);
     } else if (index === TAKE_PHOTO) {
       launchCamera(fetch);
     }
-  };
-  let actionSheet;
-  const show = () => actionSheet.show();
+  }
 
-  return (
-    <View style={s.container}>
-      <View style={s.title}>
-        <Text style={s.titleText}>{title}</Text>
-        <Button
-          iconRight
-          transparent
-          style={s.titleButton}
-          textStyle={s.titleButtonText}
-          onPress={show}
-        >
-          选择照片
-          <Icon name="keyboard-arrow-right" />
-        </Button>
-        <ActionSheet
-          ref={o => (actionSheet = o)}
-          title="选择照片"
-          options={buttons}
-          cancelButtonIndex={CANCEL_INDEX}
-          onPress={switchAction}
-        />
+  props: Props
+
+  render() {
+    const { title, source, defaultText } = this.props;
+    let actionSheet;
+    const show = () => actionSheet.show();
+    return (
+      <View style={s.container}>
+        <View style={s.title}>
+          <Text style={s.titleText}>{title}</Text>
+          <Button
+            iconRight
+            transparent
+            style={s.titleButton}
+            textStyle={s.titleButtonText}
+            onPress={show}
+          >
+            选择照片
+            <Icon name="keyboard-arrow-right" />
+          </Button>
+          <ActionSheet
+            ref={o => (actionSheet = o)}
+            title="选择照片"
+            options={buttons}
+            cancelButtonIndex={CANCEL_INDEX}
+            onPress={this.switchAction}
+          />
+        </View>
+        <View style={s.imageView}>
+          <Image
+            style={s.image}
+            source={source.uri ? source : defaultPhoto}
+          >
+            {source.uri ? undefined : <Text style={s.imageText}>{defaultText}</Text>}
+          </Image>
+        </View>
       </View>
-      <View style={s.imageView}>
-        <Image
-          style={s.image}
-          source={source || defaultPhoto}
-        >
-          {source ? undefined : <Text style={s.imageText}>{defaultText}</Text>}
-        </Image>
-      </View>
-    </View>
-  );
-};
+    );
+  }
+}
+
 
 export default PhotoPickerGroup;

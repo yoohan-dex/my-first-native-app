@@ -2,10 +2,13 @@ import React from 'react';
 import { View, ScrollView } from 'react-native';
 import { Field } from 'redux-form';
 import { Button } from 'native-base';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 import renderField from '../../components/RenderField';
 import PhotoPickerGroup from '../../components/PhotoPickerGroup';
 import Picker from '../../components/Picker';
+
+type Type = 'carImage' | 'idcardImage' | 'idcardOppositeImage' | 'drivinglicenceImage' | 'vehiclelicenceImage';
 
 const items = [
   { label: '清华大学', value: '清华大学' },
@@ -23,6 +26,10 @@ type Props = {
   certification: Object,
   nextStep: Function,
   preStep: Function,
+  uploadImage: Function<Type>,
+  pending: boolean,
+  areaList: Array,
+  onAreaChange: (value: number) => void,
 };
 
 
@@ -36,10 +43,19 @@ const VehicleMessage = (props: Props) => {
     licence,
     nextStep,
     preStep,
+    uploadImage,
+    pending,
+    areaList,
+    onAreaChange,
   } = props;
   return (
     <View>
-      <Picker items={items} />
+      <Spinner
+        visible={pending}
+        textContent={'正在上传...'}
+        textStyle={{ color: '#FFF' }}
+      />
+      <Picker items={areaList || items} onChange={onAreaChange} />
       <Field
         name="carNumber"
         type="numeric"
@@ -57,18 +73,21 @@ const VehicleMessage = (props: Props) => {
         defaultText="汽车照片"
         title="上传汽车照片"
         fetch={fetchCar}
+        uploadImage={uploadImage('carImage')}
       />
       <PhotoPickerGroup
         source={certification}
         defaultText="驾驶证"
         title="上传驾驶证照片"
         fetch={fetchCertification}
+        uploadImage={uploadImage('drivinglicenceImage')}
       />
       <PhotoPickerGroup
         source={licence}
         defaultText="行驶证"
         title="上传行驶证照片"
         fetch={fetchLicence}
+        uploadImage={uploadImage('vehiclelicenceImage')}
       />
       <View style={{ marginVertical: 20 }}>
         <Button
