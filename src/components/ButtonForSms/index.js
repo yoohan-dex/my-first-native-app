@@ -1,10 +1,7 @@
 // @flow
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
 import {
   Button,
-  InputGroup,
-  Input,
-  Icon,
   View,
 } from 'native-base';
 
@@ -113,7 +110,7 @@ class ForSms extends Component {
   }
 }
 
-/*const ButtonForSms = (props: Props) => {
+/* const ButtonForSms = (props: Props) => {
   const { inputGroupStyle, onPress, timing, available } = props;
   return (
     <View style={[inputGroupStyle, styles.inputGroup]}>

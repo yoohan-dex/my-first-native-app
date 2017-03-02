@@ -22,13 +22,14 @@ export type CarInfo = {
 
 export type Action =
     { type: 'PUSH_NEW_ROUTE', route: string }
+  | { type: 'APP_ONLOAD' }
   | { type: 'POP_ROUTE' }
   | { type: 'POP_TO_ROUTE', route: string }
   | { type: 'REPLACE_ROUTE', route: string }
   | { type: 'REPLACE_OR_PUSH_ROUTE', route: string }
   | { type: 'OPEN_DRAWER' }
   | { type: 'CLOSE_DRAWER' }
-  | { type: 'SAVE_USER', user: string, password: string }
+  | { type: 'SAVE_USER', user: string, password: string, state: String }
   | { type: 'SET_USER', user: string }
   | { type: 'SET_LIST', list: string}
   | { type: 'SMS_TIMING_START', second: number }
@@ -41,6 +42,8 @@ export type Action =
   | { type: 'MOBILE_LOGIN', from: Login }
   | { type: 'LOGIN_FAIL', message: string }
   | { type: 'LOGIN_FULLFILL' }
+  | { type: 'LOGOUT' }
+  | { type: 'LOGOUT_SUCCESS' }
   | { type: 'UPLOAD_IMAGE', imageType: string, uri: string }
   | { type: 'UPLOAD_PERSONAL_MESSAGE', form: PersonCard }
   | { type: 'UPLOAD_CAR_MESSAGE', form: CarInfo }
@@ -57,6 +60,12 @@ export type Action =
   | { type: 'ROB_FAILED' }
   | { type: 'GET_UNFULFILLED_ITEMS' }
   | { type: 'GET_UNFULFILLED_ITEMS_SUCCEED', list: Object[] }
+  | { type: 'GET_FULFILLED_ITEMS' }
+  | { type: 'GET_FULFILLED_ITEMS_SUCCEED', list: Object[] }
+  | { type: 'GET_FULFILLED_ITEMS_FAILED', message: string }
+  | { type: 'GET_CANCELLED_ITEMS' }
+  | { type: 'GET_CANCELLED_ITEMS_SUCCEED', list: Object[] }
+  | { type: 'GET_CANCELLED_ITEMS_FAILED', message: string }
   | { type: 'GET_ITEM_DETAIL', id: number }
   | { type: 'GET_ITEM_DETAIL_SUCCEED', detail: Object }
   | { type: 'REMOVE_ITEM_DETAIL' }
@@ -65,6 +74,10 @@ export type Action =
   | { type: 'CONFIRM_ARRIVAL', id: number, latitude: number, longitude: number }
   | { type: 'CONFIRM_ARRIVAL_SUCCEED' }
   | { type: 'CHANGE_HOME_STATE', state: 'home' | 'account' | 'list' }
+  | { type: 'RESET_PASSWORD', phone: number, validCode: number, newPassword: string }
+  | { type: 'RESET_PASSWORD_SUCCEED' }
+  | { type: 'REMOVE_MESSAGE' }
+
 
 export type Dispatch = (action:Action | Array<Action>) => any;
 export type GetState = () => Object;

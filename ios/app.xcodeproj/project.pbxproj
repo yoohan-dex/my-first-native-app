@@ -1108,7 +1108,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = djifelkajsidflejali3493i3u4jjjjsdfasdf;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jizui.dashengpinche.yoohoo;
 				PRODUCT_NAME = app;
 				VERSIONING_SYSTEM = "apple-generic";
 			};

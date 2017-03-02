@@ -1,8 +1,6 @@
 import request, { post } from '../utils/request';
 
-const fetchCar = request('cargroupOrder');
 const postCar = post('cargroupOrder');
-
 
 export function receivedPassenger(id: number, latitude: number, longitude: number) {
   return postCar('driverAcceptConfirmed', {
@@ -20,3 +18,6 @@ export function arrivalConfirm(id: number, latitude: number, longitude: number) 
   });
 }
 
+export function fetchBalance() {
+  return request('driver')('getDriverPocketBalance');
+}

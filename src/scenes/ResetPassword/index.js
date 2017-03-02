@@ -11,18 +11,18 @@ import {
   Icon,
   Text,
 } from 'native-base';
-import Spinner from 'react-native-loading-spinner-overlay';
 
+import Spinner from 'react-native-loading-spinner-overlay';
 import { Field, reduxForm } from 'redux-form';
 
 import renderField from '../../components/RenderField';
-
 import ButtonForSms from '../../components/ButtonForSms';
 import myTheme from '../../theme/base-theme';
 import s from './styles';
-import { Register } from '../../actions/types';
-import { mobileRegister } from '../../actions/register';
-import { removeError } from '../../actions/global';
+import { resetPassword } from '../../actions/reset';
+import { removeMessage } from '../../actions/global';
+
+
 import api from '../../api';
 
 const {
@@ -31,39 +31,43 @@ const {
 } = actions;
 
 type Data = {
-  values?: Register,
+  values?: {
+    phone: number,
+    password: string,
+    validCode: number,
+  },
 }
 
 type Props = {
   popRoute: Function,
   navigation: Object,
   data: Data,
-  registerAction: Function,
-  removeError: Function,
-  state: Object,
+  resetPassword: (phone: number, validCode: number, password: string) => void,
+  removeMessage: () => void,
+  state: {
+    pending: boolean,
+    error?: string,
+    succeed: boolean,
+  },
 }
 
-class MobileRegister extends Component {
+class ResetPassword extends Component {
 
   constructor() {
     super();
-    this.state = {
-      uri: '',
-      transfer: false,
-
-    };
 
     this.getSMS = this.getSMS.bind(this);
+    this.resetPassword = this.resetPassword.bind(this);
   }
 
   componentWillUnmount() {
-    this.props.removeError();
+    this.props.removeMessage();
   }
 
   getSMS: () => void
   getSMS() {
     const { values } = this.props.data;
-    if (values && values.phone) {
+    if (values && values.phone.length === 11) {
       api.mobile.getValidCode(values.phone);
     }
   }
@@ -73,19 +77,19 @@ class MobileRegister extends Component {
   popRoute() {
     this.props.popRoute(this.props.navigation.key);
   }
-
-  mobileRegister() {
-    const data: Data = this.props.data;
-    if (data.values) {
-      const { phone, password, validCode } = data.values;
+  resetPassword: () => void
+  resetPassword() {
+    const { values } = this.props.data;
+    if (values) {
+      const { phone, password, validCode } = values;
       if (phone && password && validCode) {
-        this.props.registerAction(data.values);
+        this.props.resetPassword(phone, validCode, password);
       }
     }
   }
 
   render() {
-    const { pending, error } = this.props.state;
+    const { pending, error, succeed } = this.props.state;
 
     return (
       <Container theme={myTheme}>
@@ -97,12 +101,12 @@ class MobileRegister extends Component {
             <Icon name="keyboard-arrow-left" />
           </Button>
 
-          <Title>手机注册</Title>
+          <Title>重置密码</Title>
         </Header>
         <View style={s.container}>
           <Spinner
             visible={pending}
-            textContent={'正在注册...'}
+            textContent={'正在重新设置'}
             textStyle={{ color: '#FFF' }}
           />
           <Field
@@ -117,7 +121,7 @@ class MobileRegister extends Component {
             name="validCode"
             type="numeric"
             component={renderField}
-            label="验证码"
+            label="手机验证码"
           />
           <Field
             name="password"
@@ -128,17 +132,14 @@ class MobileRegister extends Component {
           />
           <View style={s.buttonGroup}>
             <Button
-
               rounded
               block
               success
-              onPress={() => {
-                this.mobileRegister();
-              }}
+              onPress={this.resetPassword}
             >
-              注册
+              确定重置
             </Button>
-            <Text style={{ textAlign: 'center', marginTop: 30 }}>{error}</Text>
+            <Text style={{ textAlign: 'center', marginTop: 30 }}>{error || (succeed && '密码重置成功')}</Text>
           </View>
         </View>
       </Container>
@@ -146,7 +147,7 @@ class MobileRegister extends Component {
   }
 }
 
-const validate = (values: Register) => {
+const validate = (values: { phone: number, validCode: number, password: string }) => {
   const errors = {};
   const { phone, validCode, password } = values;
   if (!phone) {
@@ -157,7 +158,7 @@ const validate = (values: Register) => {
     errors.validCode = 'Required';
   } else if (!password) {
     errors.password = 'Required';
-  } else if (password.length < 8) {
+  } else if (password.length <= 8) {
     errors.password = 'Must be 8 characters or more';
   }
   return errors;
@@ -166,21 +167,22 @@ const validate = (values: Register) => {
 function bindActions(dispatch) {
   return {
     popRoute: key => dispatch(popRoute(key)),
-    registerAction: form => dispatch(mobileRegister(form)),
-    removeError: () => dispatch(removeError()),
+    resetPassword: (phone, validCode, password) =>
+      dispatch(resetPassword(phone, validCode, password)),
+    removeMessage: () => dispatch(removeMessage()),
     replaceAt: (routeKey, route, key) => dispatch(replaceAt(routeKey, route, key)),
   };
 }
 
 const mapStateToProps = state => ({
   navigation: state.cardNavigation,
-  data: state.form.register,
-  state: state.register,
+  data: state.form.resetForm,
+  state: state.reset,
   global: state.global,
 });
 const component = reduxForm({
-  form: 'register',
+  form: 'resetForm',
   validate,
-})(MobileRegister);
+})(ResetPassword);
 export default connect(mapStateToProps, bindActions)(component);
 

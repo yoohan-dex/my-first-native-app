@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux';
 import { reducer as formReducer } from 'redux-form';
 
+import app from './app';
 import user from './user';
 import cardNavigation from './cardNavigation';
 import forSMS from './forSMS';
@@ -10,8 +11,10 @@ import global from './global';
 import carList from './carList';
 import action from './action';
 import home from './home';
+import reset from './reset';
 
 export default combineReducers({
+  app,
   form: formReducer,
   user,
   forSMS,
@@ -22,4 +25,5 @@ export default combineReducers({
   carList,
   action,
   home,
+  reset,
 });

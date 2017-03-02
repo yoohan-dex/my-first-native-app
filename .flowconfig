@@ -13,14 +13,13 @@
 ; "node_modules/react-native" but in the source repo it is in the root
 .*/Libraries/react-native/React.js
 .*/Libraries/react-native/ReactNative.js
-
+node_modules/native-base/Components
 [include]
 ./src/*
 [libs]
 node_modules/react-native/Libraries/react-native/react-native-interface.js
 node_modules/react-native/flow
 node_modules/redux
-node_modules/redux-saga
 flow/
 
 [options]

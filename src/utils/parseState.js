@@ -1,6 +1,7 @@
 import * as c from '../constants/orderState';
+import * as d from '../constants/driverState';
 
-export default (state) => {
+export default (state: number) => {
   switch (state) {
     case 2:
       return c.ONGOING;
@@ -20,3 +21,22 @@ export default (state) => {
       return '';
   }
 };
+
+
+export const driverState = (state: number) => {
+  switch (state) {
+    case 0:
+      return d.NOT_SUBMITTED;
+    case 1:
+      return d.HAVE_SUBMITTED;
+    case 2:
+      return d.HAVE_REJECTED;
+    case 3:
+      return d.PASS;
+    case 4:
+      return d.ISSUE;
+    default:
+      return '';
+  }
+};
+

@@ -28,6 +28,7 @@ import { Login } from '../../actions/types';
 const {
   popRoute,
   replaceAt,
+  pushRoute,
 } = actions;
 
 
@@ -44,6 +45,7 @@ type Props = {
   loginAction: Function<Login>,
   removeError: Function,
   replaceAt: Function,
+  pushRoute: (route: { key: string }, key: string) => void,
 }
 
 class MobileLogin extends Component {
@@ -55,36 +57,19 @@ class MobileLogin extends Component {
       state: '登录',
     };
 
-    this.toIndex = this.toIndex.bind(this);
   }
 
-
-  componentDidUpdate() {
-    const { state, global } = this.props;
-    // if (global.user && !this.state.transfer) {
-    //   this.toIndex();
-    //   this.finishTransfer();
-    // }
-    if (state.success && !this.state.transfer) {
-      this.toIndex();
-      this.finishTransfer();
-    }
-  }
 
   componentWillUnmount() {
     this.props.removeError();
   }
 
-  finishTransfer() {
-    this.setState(pre => ({ transfer: !pre.transfer }));
+  pushRoute(route) {
+    this.props.pushRoute({ key: route }, this.props.navigation.key);
   }
 
   popRoute() {
     this.props.popRoute(this.props.navigation.key);
-  }
-
-  toIndex() {
-    this.props.replaceAt('mobile-login', { key: 'register-message' }, this.props.navigation.key);
   }
 
   login() {
@@ -141,6 +126,14 @@ class MobileLogin extends Component {
             >
               登录
             </Button>
+            <Button
+              style={{ alignSelf: 'center', marginTop: 20 }}
+              transparent
+              textStyle={{ color: '#555' }}
+              onPress={() => this.pushRoute('reset-password')}
+            >
+              忘记密码
+            </Button>
             <Text style={{ textAlign: 'center', marginTop: 30 }}>{error}</Text>
           </View>
         </View>
@@ -155,6 +148,7 @@ function bindActions(dispatch) {
     loginAction: form => dispatch(mobileLogin(form)),
     removeError: () => dispatch(removeError()),
     replaceAt: (routeKey, route, key) => dispatch(replaceAt(routeKey, route, key)),
+    pushRoute: (route, key) => dispatch(pushRoute(route, key)),
   };
 }
 

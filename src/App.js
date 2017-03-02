@@ -5,33 +5,24 @@
  */
 
 import React, { Component } from 'react';
-import { StyleSheet, StatusBar, AsyncStorage } from 'react-native';
+import {
+  AsyncStorage,
+  Image,
+  View,
+} from 'react-native';
 import { connect } from 'react-redux';
-import { Container, View } from 'native-base';
 import { getStoredState } from 'redux-persist';
 // import Modal from 'react-native-modalbox';
 // import Icon from 'react-native-vector-icons/EvilIcons';
 
-import theme from './theme/base-theme';
-// import loginLogo from './images/login.jpg';
+import abyss from './images/monkey.jpeg';
 import AppNavigator from './AppNavigator';
 import { mobileLogin } from './actions/login';
 
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     width: null,
-//     height: null,
-//   },
-//   input: {
-//     marginBottom: 20,
-//   },
-//   btn: {
-//     marginTop: 20,
-//     alignSelf: 'center',
-//   },
-// });
-
+type Props = {
+  app: { login: boolean, error: string },
+  login: (user: string, password: string) => void,
+}
 
 class App extends Component {
 
@@ -39,40 +30,59 @@ class App extends Component {
     super();
 
     this.state = {
-      loginState: false,
+      ready: false,
     };
+
+    this.ready = this.ready.bind(this);
   }
 
   async componentDidMount() {
-    const state = await getStoredState({ storage: AsyncStorage });
-    console.log(state);
-    const { user, password } = state.user;
-    if (user && password) {
-      console.log(user);
-      console.log(password);
-      this.props.login(user, password);
-
-      this.setState({
-        loginState: true,
-      });
+    try {
+      const { login } = this.props;
+      const state = await getStoredState({ storage: AsyncStorage });
+      if (state.user) {
+        const { user, password } = state.user;
+        if (user && password) {
+          login(user, password);
+        }
+      } else {
+        this.ready();
+      }
+    } finally {
+      // ..nothing
     }
-
-
   }
 
-  props: {
-    login: Function,
+  componentWillUpdate(nextProps) {
+    if (nextProps.app.login && !this.state.ready) {
+      this.ready();
+    }
+    if (nextProps.app.error && !this.state.ready) {
+      this.ready();
+    }
   }
+
+  props: Props
+  ready: () => void
+  ready() {
+    this.setState({
+      ready: true,
+    });
+  }
+
   render() {
-    
-    return (
-      <AppNavigator haveLogin={this.state.loginState} />
-    );
+    return this.state.ready || this.props.app.login || this.props.app.error ?
+      <AppNavigator /> :
+      <View style={{ flex: 1 }}>
+        <Image source={abyss} style={{ flex: 1, justifyContent: 'center' }} />
+      </View>
+    ;
   }
 }
 
 const mapStateToProps = state => ({
   user: state.user,
+  app: state.app,
 });
 
 function bindActions(dispatch) {

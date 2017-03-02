@@ -1,4 +1,4 @@
-import request, { postDriver, upload, post, get } from '../utils/request';
+import request, { postDriver, upload, post } from '../utils/request';
 import { Form } from '../actions/types';
 
 export function register(form: Form) {

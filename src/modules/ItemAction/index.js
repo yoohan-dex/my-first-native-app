@@ -20,7 +20,7 @@ type Props = {
   back: (tab: 'home' | 'list' | 'account') => void,
 }
 
-const OngoingAction = ({ action, back }) =>
+const OngoingAction = ({ action, back }: { action: Function, back: Function }) =>
   <Grid style={{ bottom: 0, flex: 0, paddingHorizontal: 5, paddingVertical: 5, justifyContent: 'space-between' }}>
     <Col size={25} style={{ paddingHorizontal: 5 }}>
       <Button

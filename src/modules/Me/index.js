@@ -12,20 +12,20 @@ import { connect } from 'react-redux';
 import { actions } from 'react-native-navigation-redux-helpers';
 
 import ItemText from '../../gear/ItemText';
+import { logout } from '../../actions/login';
 
 const {
   pushRoute,
 } = actions;
 
 
-class Me extends Component {
+type Props = {
+  pushRoute: (route: { key: string }, props: string) => void,
+  navigation: { key: string },
+  logout: () => void,
+}
 
-  static propTypes = {
-    pushRoute: PropTypes.func,
-    navigation: PropTypes.shape({
-      key: PropTypes.string,
-    }),
-  }
+class Me extends Component {
 
   constructor() {
     super();
@@ -35,6 +35,8 @@ class Me extends Component {
   handlePress() {
     this.props.pushRoute({ key: 'wallet' }, this.props.navigation.key);
   }
+
+  props: Props
   render() {
     return (
       <View style={{ flex: 1, backgroundColor: 'white' }}>
@@ -51,8 +53,15 @@ class Me extends Component {
           <ListItem itemDivider style={{ height: 20 }}>
             <Text />
           </ListItem>
-          <ListItem>
-            <ItemText text="退出登录" icon="power-settings-new" color="red" />
+          <ListItem
+            button
+            onPress={this.props.logout}
+          >
+            <ItemText
+              text="退出登录"
+              icon="power-settings-new"
+              color="red"
+            />
           </ListItem>
         </List>
       </View>
@@ -64,6 +73,7 @@ class Me extends Component {
 function bindActions(dispatch) {
   return {
     pushRoute: (route, key) => dispatch(pushRoute(route, key)),
+    logout: () => dispatch(logout()),
   };
 }
 

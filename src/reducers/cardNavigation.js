@@ -5,7 +5,7 @@ const initalState = {
   index: 0,
   routes: [
     {
-      key: 'default',
+      key: 'home',
       index: 0,
     },
   ],

@@ -14,6 +14,15 @@ export const GET_ITEM_DETAIL = 'GET_ITEM_DETAIL';
 export const GET_ITEM_DETAIL_SUCCEED = 'GET_ITEM_DETAIL_SUCCEED';
 export const REMOVE_ITEM_DETAIL = 'REMOVE_ITEM_DETAIL';
 
+export const GET_FULFILLED_ITEMS = 'GET_FULFILLED_ITEMS';
+export const GET_FULFILLED_ITEMS_SUCCEED = 'GET_FULFILLED_ITEMS_SUCCEED';
+export const GET_FULFILLED_ITEMS_FAILED = 'GET_FULFILLED_ITEMS_FAILED';
+
+export const GET_CANCELLED_ITEMS = 'GET_CANCELLED_ITEMS';
+export const GET_CANCELLED_ITEMS_SUCCEED = 'GET_CANCELLED_ITEMS_SUCCEED';
+export const GET_CANCELLED_ITEMS_FAILED = 'GET_CANCELLED_ITEMS_FAILED';
+
+
 export function getWaiting(): Action {
   return ({
     type: GET_WAITING,
@@ -27,14 +36,14 @@ export function getWaitingSucceed(list: Object[]): Action {
   });
 }
 
-export function getWaitingFailed(message: string): Action {
+export function getWaitingFailed(message: String): Action {
   return ({
     type: GET_WAITING_FAILED,
     message,
   });
 }
 
-export function robItem(id: number): Action {
+export function robItem(id: Number): Action {
   return ({
     type: ROB_ITEM,
     id,
@@ -66,22 +75,64 @@ export function getUnfulfilledSucceed(list: Object[]): Action {
   });
 }
 
-export function getItemDetail(id: number) {
+export function getItemDetail(id: Number): Action {
   return ({
     type: GET_ITEM_DETAIL,
     id,
   });
 }
 
-export function getItemDetailSucceed(detail: Object) {
+export function getItemDetailSucceed(detail: Object): Action {
   return ({
     type: GET_ITEM_DETAIL_SUCCEED,
     detail,
   });
 }
 
-export function removeItemDetial() {
+export function removeItemDetial(): Action {
   return ({
     type: REMOVE_ITEM_DETAIL,
   });
 }
+
+
+export function getFulfilled(): Action {
+  return ({
+    type: GET_FULFILLED_ITEMS,
+  });
+}
+
+export function getFulfilledSucceed(list: Object[]): Action {
+  return ({
+    type: GET_FULFILLED_ITEMS_SUCCEED,
+    list,
+  });
+}
+
+export function getFulfilledFailed(message: String): Action {
+  return ({
+    type: GET_FULFILLED_ITEMS_FAILED,
+    message,
+  });
+}
+
+export function getCancelled(): Action {
+  return ({
+    type: GET_CANCELLED_ITEMS,
+  });
+}
+
+export function getCancelledSucceed(list: Object[]): Action {
+  return ({
+    type: GET_CANCELLED_ITEMS_SUCCEED,
+    list,
+  });
+}
+
+export function getCancelledFailed(message: String): Action {
+  return ({
+    type: GET_CANCELLED_ITEMS_FAILED,
+    message,
+  });
+}
+

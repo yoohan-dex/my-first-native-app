@@ -7,7 +7,6 @@ import {
 import { View as NativeView, ScrollView } from 'react-native';
 import { reduxForm } from 'redux-form';
 import { connect } from 'react-redux';
-import request from '../../utils/request';
 import {
   uploadImage,
   getAreaList,
@@ -196,7 +195,6 @@ class RegisterMessage extends Component {
   }
 
   render() {
-    const { pending, areaList } = this.props.state;
     return (
       <Container theme={mytheme}>
         <Header>

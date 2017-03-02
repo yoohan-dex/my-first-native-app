@@ -10,6 +10,12 @@ import {
   getUnfulfilledSucceed,
   GET_ITEM_DETAIL,
   getItemDetailSucceed,
+  GET_FULFILLED_ITEMS,
+  getFulfilledSucceed,
+  getFulfilledFailed,
+  GET_CANCELLED_ITEMS,
+  getCancelledSucceed,
+  getCancelledFailed,
 } from '../actions/carList';
 
 import api from '../api';
@@ -38,15 +44,11 @@ function* getWaitingList() {
 
 function* robItem() {
   while (true) {
-    console.log('running?>');
     const action = yield take(ROB_ITEM);
-    console.log('ok start rob!');
     try {
-      const res = yield call(api.car.robItem, action.id);
-      console.log(res);
+      yield call(api.car.robItem, action.id);
       yield put(robSucceed());
     } catch ({ message }) {
-      console.log(message);
       yield put(robFailed());
     }
   }
@@ -57,7 +59,6 @@ function* getUnfulfilled() {
     yield take(GET_UNFULFILLED_ITEMS);
     try {
       const result = yield call(api.car.getUnfulfilled);
-      console.log(result);
       const car = result.data['12'];
       const list = car.map(v => ({
         start: v.station_beginName,
@@ -68,7 +69,6 @@ function* getUnfulfilled() {
         id: v.cargroup_orderId,
         state: parseState(v.order_state),
       }));
-      console.log(list);
       yield put(getUnfulfilledSucceed(list));
     } catch ({ message }) {
       console.log(message);
@@ -79,12 +79,9 @@ function* getUnfulfilled() {
 function* getItemDetail() {
   while (true) {
     const action = yield take(GET_ITEM_DETAIL);
-    console.log('action: ', action);
     try {
       const result = yield call(api.car.getItemDetail, action.id);
-      console.log(result);
       const car = result.data['2'];
-      console.log('car???: ', car);
       const detail = {
         start: car.station_beginName,
         end: car.station_finishName,
@@ -102,7 +99,30 @@ function* getItemDetail() {
         id: car.cargroup_orderId,
       };
       yield put(getItemDetailSucceed(detail));
-      console.log(result);
+    } catch ({ message }) {
+      console.log(message);
+    }
+  }
+}
+
+function* getFulfilled() {
+  while (true) {
+    yield take(GET_FULFILLED_ITEMS);
+    try {
+      const result = yield call(api.car.getFulfilled);
+      console.log('fulfilled: ', result);
+    } catch ({ message }) {
+      console.log(message);
+    }
+  }
+}
+
+function* getCancelled() {
+  while (true) {
+    yield take(GET_CANCELLED_ITEMS);
+    try {
+      const result = yield call(api.car.getCancelled);
+      console.log('cancelled: ', result);
     } catch ({ message }) {
       console.log(message);
     }
@@ -114,6 +134,8 @@ function* carList() {
   yield fork(robItem);
   yield fork(getUnfulfilled);
   yield fork(getItemDetail);
+  yield fork(getFulfilled);
+  yield fork(getCancelled);
 }
 
 export default carList;

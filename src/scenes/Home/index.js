@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { ScrollView, Platform } from 'react-native';
 import {
   Container,
-  Content,
   Header,
   Button,
   Icon,
@@ -29,7 +28,6 @@ import Me from '../../modules/Me';
 
 import myTheme from '../../theme/base-theme';
 
-import homemock from '../../mock/home';
 import listmock from '../../mock/list';
 
 import { changeHomeState } from '../../actions/home';
@@ -42,6 +40,7 @@ type Props = {
   getUnfulfilled: () => void,
   getItemDetail: (id: number) => void,
   changeHomeState: (tab: 'home' | 'list' | 'account') => void,
+  app: { login: boolean },
 }
 
 class Home extends Component {
@@ -53,15 +52,19 @@ class Home extends Component {
     this.robItem = this.robItem.bind(this);
   }
   componentDidMount() {
-    this.props.getWaiting();
-    this.props.getUnfulfilled();
+    if (this.props.app.login) {
+      this.props.getWaiting();
+      this.props.getUnfulfilled();
+    }
   }
 
   componentWillUpdate(nextProps) {
-    if (nextProps.home.tab === 'home' && this.props.home.tab !== 'home') {
-      this.props.getWaiting();
-    } else if (nextProps.home.tab === 'list' && this.props.home.tab !== 'list') {
-      this.props.getUnfulfilled();
+    if (this.props.app.login) {
+      if (nextProps.home.tab === 'home' && this.props.home.tab !== 'home') {
+        this.props.getWaiting();
+      } else if (nextProps.home.tab === 'list' && this.props.home.tab !== 'list') {
+        this.props.getUnfulfilled();
+      }
     }
   }
 
@@ -173,6 +176,7 @@ function mapStateToProps(state) {
   return {
     carList: state.carList,
     home: state.home,
+    app: state.app,
   };
 }
 
