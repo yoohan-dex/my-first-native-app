@@ -13,6 +13,7 @@ import Home from './scenes/Home';
 import Wallet from './scenes/Wallet';
 import SuccessPage from './scenes/SuccessPage';
 import ResetPassword from './scenes/ResetPassword';
+import BindPhone from './scenes/BindPhone';
 
 import {
   NOT_SUBMITTED,
@@ -34,11 +35,15 @@ const {
 type Props = {
   popRoute: () => void,
   navigation: {
-    key: string,
+    key: String,
     routes: [],
   },
-  app: { login: boolean },
-  user: { state: string },
+  app: { login: Boolean },
+  user: {
+    state: String,
+    bind: Boolean,
+    userType: '' | 'wechat' | 'phone',
+  },
   replaceAt: () => void,
   reset: () => void,
 }
@@ -54,14 +59,21 @@ class AppNavigator extends Component {
     this.initialRoute = this.initialRoute.bind(this);
     this.homeToLogin = this.homeToLogin.bind(this);
     this.loginToHome = this.loginToHome.bind(this);
+    this.checkState = this.checkState.bind(this);
+    this.watchDriverState = this.watchDriverState.bind(this);
+    this.checkUserType = this.checkUserType.bind(this);
+    this.watchUserType = this.watchUserType.bind(this);
+    this.state = {
+      driverState: '',
+    };
   }
 
 
   componentDidMount() {
     BackAndroid.addEventListener('hardwareBackPress', () => {
       const routes = this.props.navigation.routes;
-
-      if (routes[routes.length - 1].key === 'home' || routes[routes.length - 1].key === 'login') {
+      const key = routes[routes.length - 1].key;
+      if (key === 'home' || key === 'login' || key === 'register-message' || key === 'bind-phone' || key === 'upload-message') {
         return false;
       }
 
@@ -69,7 +81,8 @@ class AppNavigator extends Component {
       return true;
     });
 
-    this.initialRoute();
+    // this.checkState(this.props.user.state);
+    this.checkUserType();
     if (!this.props.app.login) {
       this.homeToLogin();
     }
@@ -77,7 +90,39 @@ class AppNavigator extends Component {
 
   componentWillUpdate(nextProps) {
     this.watchLogin(nextProps);
+    // this.watchState(nextProps);
     this.watchLogout(nextProps);
+  }
+
+  componentDidUpdate(preProps) {
+    this.watchDriverState(preProps);
+    this.watchUserType(preProps);
+  }
+
+  watchDriverState(preProps) {
+    if (preProps.user.state !== this.props.user.state) {
+      this.setState({
+        driverState: this.props.user.state,
+      });
+    }
+  }
+
+  checkUserType() {
+    const { userType, bind } = this.props.user;
+    if (userType === 'wechat' && !bind) {
+      const { navigation } = this.props;
+      const currentRoute = navigation.routes[navigation.routes.length - 1].key;
+
+      this.replaceRoute(currentRoute, 'bind-phone');
+    } else {
+      this.checkState(this.props.user.state);
+    }
+  }
+
+  watchUserType(preProps) {
+    if (preProps.user.userType !== this.props.user.userType) {
+      setTimeout(() => this.checkUserType(), 1);
+    }
   }
 
   initialRoute() {
@@ -106,27 +151,31 @@ class AppNavigator extends Component {
       } catch (e) {
         // nothing..
       }
-      this.watchState(nextProps);
     }
   }
   watchState: (nextProps: Props) => void
   watchState(nextProps) {
-    const { app, navigation } = this.props;
-    if (app.login && (this.props.user.state !== nextProps.user.state)) {
-      const currentRoute = navigation.routes[navigation.routes.length - 1].key;
-      switch (nextProps.user.state) {
-        case NOT_SUBMITTED:
-        case HAVE_REJECTED:
-          this.replaceRoute(currentRoute, 'register-message');
-          break;
-        case HAVE_SUBMITTED:
-          this.replaceRoute(currentRoute, 'upload-message');
-          break;
-        case PASS:
-        case ISSUE:
-        default:
-          break;
-      }
+    if (this.props.user.state !== nextProps.user.state) {
+      this.checkState(this.state.driverState);
+    }
+  }
+
+  checkState(state: String) {
+    const { navigation } = this.props;
+    const currentRoute = navigation.routes[navigation.routes.length - 1].key;
+    console.log(currentRoute);
+    switch (state) {
+      case HAVE_REJECTED:
+      case NOT_SUBMITTED:
+        this.replaceRoute(currentRoute, 'register-message');
+        break;
+      case HAVE_SUBMITTED:
+        this.replaceRoute(currentRoute, 'upload-message');
+        break;
+      case PASS:
+      case ISSUE:
+      default:
+        break;
     }
   }
 
@@ -166,6 +215,8 @@ class AppNavigator extends Component {
         return <ResetPassword />;
       case 'upload-message':
         return <SuccessPage />;
+      case 'bind-phone':
+        return <BindPhone />;
       default:
         return <Login />;
     }

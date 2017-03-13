@@ -1,6 +1,6 @@
 // @flow
 import React, { Component, PropTypes } from 'react';
-import { Image } from 'react-native';
+import { Image, ToastAndroid } from 'react-native';
 // import { MKButton, MKColor } from 'react-native-material-kit';
 
 import { connect } from 'react-redux';
@@ -11,13 +11,25 @@ import myTheme from './theme';
 import s from './styles';
 import background from '../../images/login.jpeg';
 
-import { setUser } from '../../actions/user';
+import { wechatLogin } from '../../actions/login';
+import { State } from '../../reducers/user';
 
 const {
   replaceAt,
   pushRoute,
 } = actions;
 
+
+type Props = {
+  replaceAt: (routeKey: String, route: { key: String }, key: String) => void,
+  pushRoute: (route: { key: String }, key: String) => void,
+  navigation: {
+    key: String,
+  },
+  wechatLogin: () => void,
+  user: State,
+  login: Object,
+}
 
 class Login extends Component {
 
@@ -27,28 +39,35 @@ class Login extends Component {
     navigation: PropTypes.shape({
       key: PropTypes.string,
     }),
+    wechatLogin: PropTypes.func,
+  }
+
+  componentDidUpdate() {
+    const { wechatError } = this.props.login;
+    if (wechatError) {
+      ToastAndroid.show(wechatError, 1000);
+    }
   }
 
   replaceRoute(route) {
     this.props.replaceAt('login', { key: route }, this.props.navigation.key);
   }
-
   pushRoute(route) {
     this.props.pushRoute({ key: route }, this.props.navigation.key);
   }
-
+  props: Props
   render() {
     return (
       <Container theme={myTheme}>
         <Image source={background} style={s.shadow}>
           <View style={s.formWrap}>
             <Button
-              onPress={() => this.replaceRoute('home')}
+              onPress={() => this.props.wechatLogin()}
               block
               style={s.btn}
             >
               <Icon name="weixin" />
-              <Text>微信快捷登陆</Text>
+              <Text>{this.props.user.state ? JSON.stringify(this.props.user) : '微信快捷登陆'}</Text>
             </Button>
             <View style={s.otherFormWrap}>
               <Button
@@ -79,13 +98,14 @@ function bindActions(dispatch) {
   return {
     replaceAt: (routeKey, route, key) => dispatch(replaceAt(routeKey, route, key)),
     pushRoute: (route, key) => dispatch(pushRoute(route, key)),
-    setUser: name => dispatch(setUser(name)),
+    wechatLogin: () => dispatch(wechatLogin()),
   };
 }
 
 const mapStateToProps = state => ({
   navigation: state.cardNavigation,
   user: state.user,
+  login: state.mobileLogin,
 });
 
 

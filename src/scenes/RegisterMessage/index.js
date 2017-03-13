@@ -3,6 +3,7 @@ import {
   Container,
   Header,
   Title,
+  Button,
 } from 'native-base';
 import { View as NativeView, ScrollView } from 'react-native';
 import { reduxForm } from 'redux-form';
@@ -14,11 +15,11 @@ import {
   uploadPersonalCard,
   setArea,
 } from '../../actions/register';
-
 import {
   PersonCard,
   CarInfo,
 } from '../../actions/types';
+import { logout } from '../../actions/login';
 
 import PersonCardMessage from '../../modules/PersonCardMessage';
 import VehicleMessage from '../../modules/VehicleMessage';
@@ -46,7 +47,8 @@ type Props = {
   data: Object<PersonCard|CarData>,
   uploadCar: Function<Object<CarInfo>>,
   uploadPerson: Function<Object<PersonCard>>,
-  setArea: (id: string) => void,
+  setArea: (id: String) => void,
+  logout: () => void,
 }
 class RegisterMessage extends Component {
   constructor(props) {
@@ -198,10 +200,15 @@ class RegisterMessage extends Component {
     return (
       <Container theme={mytheme}>
         <Header>
-
           <Title>
             上传审核资料
           </Title>
+          <Button
+            transparent
+            onPress={() => this.props.logout()}
+          >
+            重新登录
+          </Button>
         </Header>
         <ScrollView
           ref={ref => (this.ScrollView = ref)}
@@ -231,6 +238,7 @@ function bindActions(dispatch) {
     uploadPerson: (form: Object<PersonCard>) => dispatch(uploadPersonalCard(form)),
     uploadCar: (form: Object<CarInfo>) => dispatch(uploadCar(form)),
     setArea: (id: number) => dispatch(setArea(id)),
+    logout: () => dispatch(logout()),
     // removeError: () => dispatch(removeError()),
     // replaceAt: (routeKey, route, key) => dispatch(replaceAt(routeKey, route, key)),
   };

@@ -1,5 +1,12 @@
 import { Action } from '../actions/types';
-import { MOBILE_LOGIN, LOGIN_FAIL, LOGIN_FULLFILL } from '../actions/login';
+import {
+  MOBILE_LOGIN,
+  LOGIN_FAIL,
+  LOGIN_FULLFILL,
+  WECHAT_LOGIN,
+  WECHAT_LOGIN_FAILED,
+  WECHAT_LOGIN_SUCCEED,
+} from '../actions/login';
 import { REMOVE_ERROR } from '../actions/global';
 
 type State = {
@@ -12,6 +19,7 @@ const initialState = {
   pending: false,
   success: false,
   error: '',
+  wechatError: '',
 };
 
 export default function (state: State = initialState, action: Action) {
@@ -40,6 +48,24 @@ export default function (state: State = initialState, action: Action) {
         ...state,
         pending: false,
         error: '',
+      };
+    case WECHAT_LOGIN:
+      return {
+        ...state,
+        pending: true,
+        error: '',
+      };
+    case WECHAT_LOGIN_SUCCEED:
+      return {
+        ...state,
+        pending: false,
+        error: '',
+      };
+    case WECHAT_LOGIN_FAILED:
+      return {
+        ...state,
+        pending: false,
+        wechatError: action.message,
       };
     default:
       return state;

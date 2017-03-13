@@ -12,6 +12,7 @@ import carList from './carList';
 import action from './action';
 import home from './home';
 import reset from './reset';
+import bindPhone from './bindPhone';
 
 export default combineReducers({
   app,
@@ -26,4 +27,5 @@ export default combineReducers({
   action,
   home,
   reset,
+  bindPhone,
 });

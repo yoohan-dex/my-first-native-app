@@ -4,6 +4,8 @@ import android.app.Application;
 import android.util.Log;
 
 import com.facebook.react.ReactApplication;
+import com.theweflex.react.WeChatPackage;
+import cn.jpush.reactnativejpush.JPushPackage;
 import com.ocetnik.timer.BackgroundTimerPackage;
 import com.BV.LinearGradient.LinearGradientPackage;
 import com.react.rnspinkit.RNSpinkitPackage;
@@ -21,6 +23,9 @@ import java.util.List;
 
 public class MainApplication extends Application implements ReactApplication {
 
+  private boolean SHUTDOWN_TOAST = false;    
+  private boolean SHUTDOWN_LOG = false; 
+
   private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
     @Override
     protected boolean getUseDeveloperSupport() {
@@ -31,6 +36,8 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new WeChatPackage(),
+            new JPushPackage(SHUTDOWN_TOAST, SHUTDOWN_LOG),
             new BackgroundTimerPackage(),
             new LinearGradientPackage(),
             new RNSpinkitPackage(),

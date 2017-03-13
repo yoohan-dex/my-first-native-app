@@ -15,12 +15,14 @@ import myTheme from '../../theme/base-theme';
 
 import ItemMessage from '../../modules/ItemMessage';
 import Passenger from '../../modules/Passenger';
+import Comments from '../../modules/Comments';
 import ItemAction from '../../modules/ItemAction';
 
 import { removeItemDetial } from '../../actions/carList';
 import {
   receive,
   arrival,
+  cancel,
 } from '../../actions/action';
 import { changeHomeState } from '../../actions/home';
 
@@ -30,21 +32,23 @@ const {
 
 type Props = {
   popRoute: () => void,
-  navigation: { key: string },
+  navigation: { key: String },
   detail: {
-    id: number,
-    start: string,
-    end: string,
-    time: string,
-    money: number,
-    state: string,
-    dead: number,
+    id: Number,
+    start: String,
+    end: String,
+    time: String,
+    money: Number,
+    state: String,
+    dead: Number,
     passengers: [],
+    comments: [],
   },
-  action: { pending: boolean },
+  action: { pending: Boolean },
   removeDetail: () => void,
-  receivePassenger: (id: number, latitude: number, longitude: number) => void,
-  arrivalConfirm: (id: number, latitude: number, longitude: number) => void,
+  receivePassenger: (id: Number, latitude: Number, longitude: Number) => void,
+  arrivalConfirm: (id: Number, latitude: Number, longitude: Number) => void,
+  cancelItem: (id: Number) => void,
   changeHomeState: (tab: 'home' | 'list' | 'account') => void,
 }
 
@@ -56,6 +60,7 @@ class ItemDetail extends Component {
     this.confirmReceive = this.confirmReceive.bind(this);
     this.confirmArrival = this.confirmArrival.bind(this);
     this.back = this.back.bind(this);
+    this.cancel = this.cancel.bind(this);
   }
 
   componentDidMount() {
@@ -83,7 +88,9 @@ class ItemDetail extends Component {
     this.popRoute();
     this.props.changeHomeState('home');
   }
-
+  cancel() {
+    this.props.cancelItem(this.props.detail.id);
+  }
   confirmReceive() {
     this.getCurrentPosition((latitude, longitude) =>
       this.props.receivePassenger(this.props.detail.id, latitude, longitude),
@@ -98,7 +105,7 @@ class ItemDetail extends Component {
 
   props: Props
   render() {
-    const { id, start, end, time, money, state, dead, passengers } = this.props.detail;
+    const { id, start, end, time, money, state, dead, passengers, comments } = this.props.detail;
     const { pending } = this.props.action;
     return (
       <Container theme={myTheme}>
@@ -113,7 +120,7 @@ class ItemDetail extends Component {
         </Header>
         <View style={{ flex: 1, width: null, height: null, backgroundColor: 'white' }}>
           <Spinner
-            visible={pending}
+            visible={!this.props.detail || pending}
           />
           {this.props.detail ?
             <ItemMessage
@@ -125,14 +132,18 @@ class ItemDetail extends Component {
               state={state}
               dead={dead}
             /> : undefined }
-          {this.props.detail ?
+          {passengers ?
             <Passenger passengers={passengers} /> :
             undefined }
+          {comments ?
+            <Comments comments={comments} />
+          : undefined }
           <ItemAction
             state={state}
             receive={this.confirmReceive}
             arrival={this.confirmArrival}
             back={this.back}
+            cancel={this.cancel}
           />
         </View>
       </Container>
@@ -146,6 +157,7 @@ function bindActions(dispatch) {
     removeDetail: () => dispatch(removeItemDetial()),
     receivePassenger: (id, latitude, longitude) => dispatch(receive(id, longitude, latitude)),
     arrivalConfirm: (id, latitude, longitude) => dispatch(arrival(id, longitude, latitude)),
+    cancelItem: id => dispatch(cancel(id)),
     changeHomeState: tab => dispatch(changeHomeState(tab)),
   };
 }

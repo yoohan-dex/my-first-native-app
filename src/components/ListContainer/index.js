@@ -3,7 +3,10 @@ import { Card } from 'native-base';
 import { connect } from 'react-redux';
 import { actions } from 'react-native-navigation-redux-helpers';
 
-import { Current } from '../ListRow';
+import { Normal, Cancelled } from '../ListRow';
+import {
+  getItemDetail,
+} from '../../actions/carList';
 
 const {
   pushRoute,
@@ -14,6 +17,7 @@ type Props = {
   pushRoute: Function,
   navigation: Object,
   getItemDetail: (id: number) => void,
+  issue: Boolean,
 }
 
 class CurrentContainer extends Component {
@@ -33,15 +37,26 @@ class CurrentContainer extends Component {
   }
 
   renderRow(data, section, row) {
+    if (!this.props.issue) {
+      return (
+        <Normal
+          key={row}
+          start={data.start}
+          time={data.time}
+          end={data.end}
+          state={data.state}
+          handlePress={this.handlePress(data.id)}
+          dead={data.dead}
+        />
+      );
+    }
     return (
-      <Current
+      <Cancelled
         key={row}
         start={data.start}
         time={data.time}
         end={data.end}
-        state={data.state}
-        handlePress={this.handlePress(data.id)}
-        dead={data.dead}
+        issue={data.issue}
       />
     );
   }
@@ -58,6 +73,7 @@ class CurrentContainer extends Component {
 function bindActions(dispatch) {
   return {
     pushRoute: (route, key) => dispatch(pushRoute(route, key)),
+    getItemDetail: id => dispatch(getItemDetail(id)),
   };
 }
 
@@ -66,6 +82,4 @@ const mapStateToProps = state => ({
 });
 
 
-export default {
-  Current: connect(mapStateToProps, bindActions)(CurrentContainer),
-};
+export default connect(mapStateToProps, bindActions)(CurrentContainer);

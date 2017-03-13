@@ -9,8 +9,8 @@ import HomeRow, { RowProps } from '../../components/HomeRow';
 type Rows = Array<RowProps>
 type Props = {
   rows: Rows,
-  robItem: (id: string) => void,
-  robbing: boolean,
+  robItem: (id: String) => void,
+  robbing: Boolean,
   state: 'default' | 'success' | 'failed',
 }
 

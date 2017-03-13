@@ -18,7 +18,8 @@ import {
   getWaiting,
   robItem,
   getUnfulfilled,
-  getItemDetail as getDetail,
+  getCancelled,
+  getFulfilled,
 } from '../../actions/carList';
 import { State } from '../../reducers/carList';
 
@@ -28,8 +29,6 @@ import Me from '../../modules/Me';
 
 import myTheme from '../../theme/base-theme';
 
-import listmock from '../../mock/list';
-
 import { changeHomeState } from '../../actions/home';
 
 type Props = {
@@ -38,9 +37,11 @@ type Props = {
   carList: State,
   home: { tab: string },
   getUnfulfilled: () => void,
-  getItemDetail: (id: number) => void,
+  getCancelled: () => void,
+  getFulfilled: () => void,
   changeHomeState: (tab: 'home' | 'list' | 'account') => void,
   app: { login: boolean },
+  user: Object,
 }
 
 class Home extends Component {
@@ -50,6 +51,7 @@ class Home extends Component {
     this.renderTitle = this.renderTitle.bind(this);
     this.renderContent = this.renderContent.bind(this);
     this.robItem = this.robItem.bind(this);
+    this.getList = this.getList.bind(this);
   }
   componentDidMount() {
     if (this.props.app.login) {
@@ -57,15 +59,21 @@ class Home extends Component {
       this.props.getUnfulfilled();
     }
   }
-
   componentWillUpdate(nextProps) {
     if (this.props.app.login) {
       if (nextProps.home.tab === 'home' && this.props.home.tab !== 'home') {
         this.props.getWaiting();
       } else if (nextProps.home.tab === 'list' && this.props.home.tab !== 'list') {
-        this.props.getUnfulfilled();
+        this.getList();
       }
     }
+  }
+
+  getList: () => void
+  getList() {
+    this.props.getUnfulfilled();
+    this.props.getFulfilled();
+    this.props.getCancelled();
   }
 
   robItem(id) {
@@ -74,8 +82,8 @@ class Home extends Component {
 
   props: Props
   renderContent() {
-    const { list, robbing, state, unfulfilled, message } = this.props.carList;
-    const { getItemDetail } = this.props;
+    const { list, robbing, state, unfulfilled, message, fulfilled, cancelled } = this.props.carList;
+    const { user } = this.props;
     switch (this.props.home.tab) {
       case 'home':
         return list ?
@@ -85,15 +93,13 @@ class Home extends Component {
             robbing={robbing}
             robItem={this.robItem}
           /> :
-          <Text style={{ textAlign: 'center', color: '#444', marginTop: 30 }}>{message}</Text>;
+          <Text style={{ textAlign: 'center', color: '#444', marginTop: 30 }}>{JSON.stringify(user)}</Text>;
       case 'list':
         return (
           <List
-            rows={listmock}
-            getItemDetail={getItemDetail}
             unfulfilled={unfulfilled}
-            fulfilled
-            cancelled
+            fulfilled={fulfilled}
+            cancelled={cancelled}
           />
         );
       case 'account':
@@ -167,8 +173,9 @@ function bindActions(dispatch) {
     getWaiting: () => dispatch(getWaiting()),
     robItem: index => dispatch(robItem(index)),
     getUnfulfilled: () => dispatch(getUnfulfilled()),
-    getItemDetail: id => dispatch(getDetail(id)),
     changeHomeState: tab => dispatch(changeHomeState(tab)),
+    getCancelled: () => dispatch(getCancelled()),
+    getFulfilled: () => dispatch(getFulfilled()),
   };
 }
 
@@ -177,6 +184,7 @@ function mapStateToProps(state) {
     carList: state.carList,
     home: state.home,
     app: state.app,
+    user: state.user,
   };
 }
 

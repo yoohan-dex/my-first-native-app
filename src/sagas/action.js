@@ -3,9 +3,17 @@ import { call, put, takeEvery, takeLatest, fork, take } from 'redux-saga/effects
 import {
   CONFIRM_RECEIVE_PASSENGER,
   CONFIRM_ARRIVAL,
+  CANCEL_ITEM,
   receiveSucceed,
   arrivalSucceed,
+  cancelSucceed,
+  BIND_PHONE,
+  bindPhoneFailed,
+  bindPhoneSucceed,
 } from '../actions/action';
+import {
+  relogin,
+} from '../actions/login';
 
 import {
   getItemDetail,
@@ -45,9 +53,40 @@ function* arrival() {
   }
 }
 
+function* cancel() {
+  while (true) {
+    const action = yield take(CANCEL_ITEM);
+    const { id } = action;
+    try {
+      yield call(api.action.cancelItem, id);
+      yield put(getItemDetail(id));
+      yield put(cancelSucceed());
+    } catch ({ message }) {
+      console.log(message);
+      yield put(cancelSucceed());
+    }
+  }
+}
+
+function* bindPhone() {
+  while (true) {
+    const action = yield take(BIND_PHONE);
+    const { phone, validCode } = action;
+    try {
+      yield call(api.action.bindPhone, phone, validCode);
+      yield put(bindPhoneSucceed());
+      yield put(relogin());
+    } catch ({ message }) {
+      yield put(bindPhoneFailed(message));
+    }
+  }
+}
+
 function* actions() {
+  yield fork(bindPhone);
   yield fork(receive);
   yield fork(arrival);
+  yield fork(cancel);
 }
 
 export default actions;

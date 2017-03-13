@@ -15,6 +15,9 @@ import {
   ONGOING,
   CONFIRM_RECEIVE,
   CONFIRM_ARRIVAL,
+  ORDER_ISSUE_OVER,
+  ORDER_FULFILLED,
+  ORDER_ISSUE,
 } from '../../constants/orderState';
 
 const { StartItem, EndItem, TimeItem, PayItem } = itemClass(40, { fontWeight: 'bold', color: '#34314c' });
@@ -38,16 +41,10 @@ const OngoingTitle = ({ dead }: { dead: number }) =>
     />
   </View>;
 
-const DrivingTitle = () =>
+const CommontTitle = ({ h1, h3 }: {h1: String, h3: String}) =>
   <View style={{ justifyContent: 'center', alignItems: 'center', marginHorizontal: 15, marginVertical: 10 }}>
-    <H1 style={{ color: '#555', fontWeight: 'bold', margin: 10 }}>已经出发</H1>
-    <H3 style={{ color: '#555', lineHeight: 0 }}>一路顺风，开车要小心哦</H3>
-  </View>;
-
-const CheckingTitle = () =>
-  <View style={{ justifyContent: 'center', alignItems: 'center', marginHorizontal: 15, marginVertical: 10 }}>
-    <H1 style={{ color: '#555', fontWeight: 'bold', margin: 10 }}>已经送达</H1>
-    <H3 style={{ color: '#555', lineHeight: 0 }}>等乘客确认后金额即可收入钱包</H3>
+    <H1 style={{ color: '#555', fontWeight: 'bold', margin: 10 }}>{h1}</H1>
+    <H3 style={{ color: '#555', lineHeight: 0 }}>{h3}</H3>
   </View>;
 
 class ItemMessage extends Component {
@@ -67,9 +64,33 @@ class ItemMessage extends Component {
       case ONGOING:
         return <OngoingTitle dead={dead} />;
       case CONFIRM_RECEIVE:
-        return <DrivingTitle />;
+        return (
+          <CommontTitle
+            h1="已经出发"
+            h3="一路顺风，开车要小心哦"
+          />
+        );
       case CONFIRM_ARRIVAL:
-        return <CheckingTitle />;
+        return (
+          <CommontTitle
+            h1="已经送达"
+            h3="等乘客确认后金额即可收入钱包"
+          />
+        );
+      case ORDER_FULFILLED:
+        return (
+          <CommontTitle
+            h1="订单已完成"
+            h3="订单收入可在钱包中确认"
+          />
+        );
+      case ORDER_ISSUE_OVER:
+        return (
+          <CommontTitle
+            h1="订单纠纷结束"
+            h3="如有异议可以致电大圣客服"
+          />
+        );
       default:
         return undefined;
     }

@@ -2,7 +2,7 @@ import request, { post } from '../utils/request';
 
 const postCar = post('cargroupOrder');
 
-export function receivedPassenger(id: number, latitude: number, longitude: number) {
+export function receivedPassenger(id: Number, latitude: Number, longitude: Number) {
   return postCar('driverAcceptConfirmed', {
     cargroup_orderId: id,
     latitude,
@@ -10,7 +10,7 @@ export function receivedPassenger(id: number, latitude: number, longitude: numbe
   });
 }
 
-export function arrivalConfirm(id: number, latitude: number, longitude: number) {
+export function arrivalConfirm(id: Number, latitude: Number, longitude: Number) {
   return postCar('driverArrivalConfirmed', {
     cargroup_orderId: id,
     latitude,
@@ -20,4 +20,17 @@ export function arrivalConfirm(id: number, latitude: number, longitude: number) 
 
 export function fetchBalance() {
   return request('driver')('getDriverPocketBalance');
+}
+
+export function cancelItem(id: Number) {
+  return postCar('cancelCargroupOrderByDriver', {
+    cargroup_orderId: id,
+  });
+}
+
+export function bindPhone(phone: Number, validCode: Number) {
+  return post('driver')('driverWxLoginBindMobphone', {
+    phone_num: phone,
+    sms_code: validCode,
+  });
 }

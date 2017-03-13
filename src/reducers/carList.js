@@ -9,6 +9,10 @@ import {
   GET_UNFULFILLED_ITEMS_SUCCEED,
   GET_ITEM_DETAIL_SUCCEED,
   REMOVE_ITEM_DETAIL,
+  GET_FULFILLED_ITEMS_SUCCEED,
+  GET_FULFILLED_ITEMS_FAILED,
+  GET_CANCELLED_ITEMS_SUCCEED,
+  GET_CANCELLED_ITEMS_FAILED,
 } from '../actions/carList';
 
 export type State = {
@@ -19,6 +23,8 @@ export type State = {
   robbing: boolean,
   state: 'default' | 'success' | 'failed',
   message: string,
+  fulfilled: Object[],
+  cancelled: Object[],
 };
 
 const initialState = {
@@ -29,13 +35,16 @@ const initialState = {
   state: 'default',
   detail: '',
   message: '',
+  fulfilled: '',
+  cancelled: '',
 };
 
-export default function (state: State = initialState, action: Action) {
+export default function (state: State = initialState, action: Action): State {
   switch (action.type) {
     case GET_WAITING:
       return {
         ...state,
+        list: '',
         pending: true,
       };
     case GET_WAITING_SUCCEED:
@@ -81,6 +90,26 @@ export default function (state: State = initialState, action: Action) {
       return {
         ...state,
         detail: '',
+      };
+    case GET_FULFILLED_ITEMS_SUCCEED:
+      return {
+        ...state,
+        fulfilled: action.list,
+      };
+    case GET_FULFILLED_ITEMS_FAILED:
+      return {
+        ...state,
+        fulfilled: '',
+      };
+    case GET_CANCELLED_ITEMS_SUCCEED:
+      return {
+        ...state,
+        cancelled: action.list,
+      };
+    case GET_CANCELLED_ITEMS_FAILED:
+      return {
+        ...state,
+        cancelled: '',
       };
     default:
       return state;

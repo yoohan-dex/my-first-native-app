@@ -14,14 +14,19 @@ import { connect } from 'react-redux';
 import { getStoredState } from 'redux-persist';
 // import Modal from 'react-native-modalbox';
 // import Icon from 'react-native-vector-icons/EvilIcons';
-
+// import push from './utils/push';
+import push from 'jpush-react-native';
 import abyss from './images/monkey.jpeg';
 import AppNavigator from './AppNavigator';
-import { mobileLogin } from './actions/login';
+import { mobileLogin, wechatAutoLogin } from './actions/login';
 
 type Props = {
-  app: { login: boolean, error: string },
-  login: (user: string, password: string) => void,
+  app: { login: Boolean, error: String },
+  login: (user: String, password: String) => void,
+  wechatLogin: (account: String, token: String) => void,
+  user: {
+    user: String,
+  },
 }
 
 class App extends Component {
@@ -38,22 +43,29 @@ class App extends Component {
 
   async componentDidMount() {
     try {
-      const { login } = this.props;
+      const { login, wechatLogin } = this.props;
       const state = await getStoredState({ storage: AsyncStorage });
       if (state.user) {
-        const { user, password } = state.user;
+        const { user, password, account, token } = state.user;
         if (user && password) {
           login(user, password);
+        } else if (account && token) {
+          wechatLogin(account, token);
+        } else {
+          this.ready();
         }
       } else {
         this.ready();
       }
-    } finally {
-      // ..nothing
+    } catch (e) {
+      this.ready();
     }
   }
 
   componentWillUpdate(nextProps) {
+    if (!this.props.user.user && nextProps.user.user) {
+      push.getRegistrationID(id => console.log(id));
+    }
     if (nextProps.app.login && !this.state.ready) {
       this.ready();
     }
@@ -88,6 +100,7 @@ const mapStateToProps = state => ({
 function bindActions(dispatch) {
   return {
     login: (user, password) => dispatch(mobileLogin({ phone: user, password })),
+    wechatLogin: (account, token) => dispatch(wechatAutoLogin(account, token)),
   };
 }
 

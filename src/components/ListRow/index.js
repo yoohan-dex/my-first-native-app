@@ -18,16 +18,24 @@ import {
   ORDER_ISSUE_OVER,
 } from '../../constants/orderState';
 
-type Props = {
-  start: string,
-  end: string,
-  time: string,
+type NormalProps = {
+  start: String,
+  end: String,
+  time: String,
   state: 'ongoing' | 'issue' | 'checking' | 'driving',
   handlePress: Function,
-  dead: string,
+  dead: String,
 }
 
-const Ongoing = ({ dead }) => <Countdown
+type IssueProps = {
+  start: String,
+  end: String,
+  time: String,
+  handlePress: Function,
+  issue: String,
+}
+
+const Ongoing = ({ dead }: { dead: String }) => <Countdown
   dead={dead}
   style={{
     fontWeight: 'bold',
@@ -36,9 +44,8 @@ const Ongoing = ({ dead }) => <Countdown
 />;
 
 const State = props => <Text style={{ fontWeight: 'bold', fontSize: 18, textAlign: 'center', alignSelf: 'center', color: '#555' }}>{props.children}</Text>;
-const Current = ({ start, end, time, handlePress, state, dead }: Props) => {
+const Normal = ({ start, end, time, handlePress, state, dead }: NormalProps) => {
   const parseState = () => {
-    console.log('the state is : ', state);
     switch (state) {
       case ONGOING:
         return <Ongoing dead={dead} />;
@@ -49,8 +56,9 @@ const Current = ({ start, end, time, handlePress, state, dead }: Props) => {
       case ORDER_ISSUE:
         return <State>纠纷处理中</State>;
       case ORDER_FULFILLED:
-      case ORDER_ISSUE_OVER:
         return <State>订单完成</State>;
+      case ORDER_ISSUE_OVER:
+        return <State>纠纷处理完毕,订单完成</State>;
       default:
         return <Ongoing dead={dead} />;
     }
@@ -82,4 +90,25 @@ const Current = ({ start, end, time, handlePress, state, dead }: Props) => {
   );
 };
 
-export { Current };
+const Cancelled = ({ start, end, time, issue }: IssueProps) => (
+  <CardItem>
+    <Grid>
+      <Col size={60}>
+        <ItemText text={start} icon="room" color="#F16B6F" />
+        <ItemText text={end} icon="room" color="#79BD9A" />
+        <ItemText text={`${time} 出发`} icon="schedule" color="#F17F42" />
+      </Col>
+      <Col size={40} style={{ paddingVertical: 20, paddingHorizontal: 10, justifyContent: 'center' }}>
+        <Grid>
+          <Row size={25} />
+          <Row size={50} style={{ justifyContent: 'center' }}>
+            <State>{issue}</State>
+          </Row>
+        </Grid>
+      </Col>
+    </Grid>
+  </CardItem>
+);
+
+
+export { Normal, Cancelled };

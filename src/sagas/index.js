@@ -4,10 +4,12 @@ import carList from './carList';
 import action from './action';
 import reset from './reset';
 
-export default [
-  saga,
-  login,
-  carList,
-  action,
-  reset,
-];
+export default function* rootSaga() {
+  yield [
+    saga(),
+    login(),
+    carList(),
+    action(),
+    reset(),
+  ];
+}

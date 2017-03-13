@@ -81,6 +81,7 @@ function* getItemDetail() {
     const action = yield take(GET_ITEM_DETAIL);
     try {
       const result = yield call(api.car.getItemDetail, action.id);
+      console.log(result);
       const car = result.data['2'];
       const detail = {
         start: car.station_beginName,
@@ -88,11 +89,22 @@ function* getItemDetail() {
         state: parseState(car.order_state),
         time: moment(car.departureTime),
         dead: car.departureTime,
-        passengers: car.passengerInfoPojos.map(v => ({
+        passengers: car.passengerInfoPojos && car.passengerInfoPojos.map(v => ({
           portrait: v.headImgUrl,
           phone: v.mobilephoneNum,
           name: v.nickname,
           id: v.userId,
+        })),
+        comments: car.passengerCommentPojos && car.passengerCommentPojos.map(v => ({
+          name: v.nickname,
+          id: v.userId,
+          portrait: v.headImgUrl,
+          content: v.comment_content,
+          score: {
+            politeness: v.polite_score,
+            accurateness: v.punctuality_score,
+            neatness: v.vehicle_score,
+          },
         })),
         createAt: car.createTime,
         money: car.fare,
@@ -111,6 +123,16 @@ function* getFulfilled() {
     try {
       const result = yield call(api.car.getFulfilled);
       console.log('fulfilled: ', result);
+      const car = result.data.KEY_SIMPLECARGROUPORDER_LIST.list;
+      const list = car.map(v => ({
+        start: v.station_beginName,
+        end: v.station_finishName,
+        time: moment(v.finishTime),
+        money: v.fare,
+        id: v.cargroup_orderId,
+        state: parseState(v.order_state),
+      }));
+      yield put(getFulfilledSucceed(list));
     } catch ({ message }) {
       console.log(message);
     }
@@ -122,6 +144,17 @@ function* getCancelled() {
     yield take(GET_CANCELLED_ITEMS);
     try {
       const result = yield call(api.car.getCancelled);
+      const car = result.data['9'].list;
+      const list = car.map(v => ({
+        start: v.station_beginName,
+        end: v.station_finishName,
+        time: moment(v.departureTime),
+        money: v.fare,
+        id: v.cargroup_orderId,
+        state: parseState(v.order_state),
+        issue: v.canceled_reason,
+      }));
+      yield put(getCancelledSucceed(list));
       console.log('cancelled: ', result);
     } catch ({ message }) {
       console.log(message);
@@ -139,3 +172,13 @@ function* carList() {
 }
 
 export default carList;
+
+// const test = (...args) => args
+//   .reduce((x, y) => y + x)
+//   .replace(/,/g, '')
+//   .split('')
+//   .reverse()
+//   .reduce((pre, curr, i, arr) => (arr.length - 1 === i) ? curr + pre : pre + curr); // eslint-disable-line
+
+// console.log(test`领${'沃'}爱${'我'}`); // eslint-disable-line
+

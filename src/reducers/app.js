@@ -4,12 +4,13 @@ import { APP_ONLOAD } from '../actions/app';
 import { LOGOUT_SUCCESS, LOGIN_FAIL } from '../actions/login';
 
 type State = {
-  login: boolean,
-  error: '',
+  login: Boolean,
+  error: String,
 }
 
 const initialState = {
   login: false,
+  error: '',
 };
 
 export default function (state: State = initialState, action: Action) {

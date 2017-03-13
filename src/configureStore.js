@@ -23,7 +23,7 @@ const composeEnhance = composeWithDevTools({
 // };
 
 const sagaMiddleware = createSagaMiddleware();
-export const runSaga = () => sagas.forEach(saga => sagaMiddleware.run(saga));
+export const runSaga = () => sagaMiddleware.run(sagas);
 export default function configureStore(onCompletion: () => void) {
   const enhancer = composeEnhance(
     applyMiddleware(sagaMiddleware),

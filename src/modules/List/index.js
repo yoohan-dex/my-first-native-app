@@ -3,17 +3,12 @@ import { Animated, Text } from 'react-native';
 import { TabViewAnimated, TabBar } from 'react-native-tab-view';
 
 import styles from './styles';
-import container from '../../components/ListContainer';
-
-const {
-  Current,
-} = container;
+import ListContainer from '../../components/ListContainer';
 
 type Props = {
   unfulfilled: Object[],
   fulfilled: Object[],
   cancelled: Object[],
-  getItemDetail: (id: number) => void,
 }
 
 class List extends Component {
@@ -72,26 +67,25 @@ class List extends Component {
 
 
   renderScene = ({ route }) => {
+    const { unfulfilled, fulfilled, cancelled } = this.props;
     switch (route.key) {
       case '1':
-        return this.props.unfulfilled ?
-          <Current
-            dataArray={this.props.unfulfilled}
-            getItemDetail={this.props.getItemDetail}
+        return unfulfilled ?
+          <ListContainer
+            dataArray={unfulfilled}
           /> :
           undefined;
       case '2':
-        return this.props.unfulfilled ?
-          <Current
-            dataArray={this.props.unfulfilled}
-            getItemDetail={this.props.getItemDetail}
+        return fulfilled ?
+          <ListContainer
+            dataArray={fulfilled}
           /> :
           undefined;
       case '3':
-        return this.props.unfulfilled ?
-          <Current
-            dataArray={this.props.unfulfilled}
-            getItemDetail={this.props.getItemDetail}
+        return cancelled ?
+          <ListContainer
+            issue
+            dataArray={cancelled}
           /> :
           undefined;
       default:

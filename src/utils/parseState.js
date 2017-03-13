@@ -36,7 +36,7 @@ export const driverState = (state: number) => {
     case 4:
       return d.ISSUE;
     default:
-      return '';
+      return 'unknown';
   }
 };
 

@@ -49,10 +49,10 @@ const ItemDoubleText =
         <Text style={[s.text, style && style]}>{leftText}</Text>
       </View>
       <View style={[s.textWrap]}>
-        <Icon
+        {icon ? <Icon
           name={icon}
           style={[s.icon, { color }]}
-        />
+        /> : undefined }
         <Text style={[s.text, style && style]}>{rightText}</Text>
       </View>
     </View>;

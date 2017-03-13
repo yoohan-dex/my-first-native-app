@@ -40,11 +40,11 @@ class Passenger extends Component {
     return (
       <View>
         <ListItem itemDivider style={{ backgroundColor: 'white' }}>
-          <Text style={{ color: '#888' }}>联系乘客({passengers.length})</Text>
+          <Text style={{ color: '#888' }}>联系乘客({passengers && passengers.length})</Text>
         </ListItem>
         <ScrollView style={{ flex: 1 }}>
           <List>
-            {passengers.map(this.renderItem)}
+            {passengers && passengers.map(this.renderItem)}
           </List>
         </ScrollView>
       </View>
