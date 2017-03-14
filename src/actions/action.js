@@ -10,6 +10,17 @@ export const BIND_PHONE = 'BIND_PHONE';
 export const BIND_PHONE_FAILED = 'BIND_PHONE_FAILED';
 export const BIND_PHONE_SUCCEED = 'BIND_PHONE_SUCCEED';
 
+export const BIND_WECHAT = 'BIND_WECHAT';
+export const BIND_WECHAT_SUCCEED = 'BIND_WECHAT_SUCCEED';
+export const BIND_WECHAT_FAILED = 'BIND_WECHAT_FAILED';
+
+export const FETCH_BALANCE = 'FETCH_BALANCE';
+export const FETCH_BALANCE_SUCCEED = 'FETCH_BALANCE_SUCCEED';
+
+export const WITHDRAW = 'WITHDRAW';
+export const WITHDRAW_FAILED = 'WITHDRAW_FAILED';
+export const WITHDRAW_SUCCEED = 'WITHDRAW_SUCCEED';
+
 export function receive(id: Number, longitude: Number, latitude: Number): Action {
   return ({
     type: CONFIRM_RECEIVE_PASSENGER,
@@ -74,4 +85,54 @@ export function bindPhoneSucceed(): Action {
   };
 }
 
+export function bindWechat(): Action {
+  return {
+    type: BIND_WECHAT,
+  };
+}
 
+export function bindWechatSucceed(): Action {
+  return {
+    type: BIND_WECHAT_SUCCEED,
+  };
+}
+
+export function bindWechatFailed(message: String): Action {
+  return {
+    type: BIND_WECHAT_FAILED,
+    message,
+  };
+}
+
+export function fetchBalance(): Action {
+  return {
+    type: FETCH_BALANCE,
+  };
+}
+
+export function fetchBalanceSucceed(total: Number, withdrawMoney: Number): Action {
+  return {
+    type: FETCH_BALANCE_SUCCEED,
+    total,
+    withdrawMoney,
+  };
+}
+
+export function withdraw(): Action {
+  return {
+    type: WITHDRAW,
+  };
+}
+
+export function withdrawSucceed(): Action {
+  return {
+    type: WITHDRAW_SUCCEED,
+  };
+}
+
+export function withdrawFailed(message: string): Action {
+  return {
+    type: WITHDRAW_FAILED,
+    message,
+  };
+}

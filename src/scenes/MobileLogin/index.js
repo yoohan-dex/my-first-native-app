@@ -56,7 +56,6 @@ class MobileLogin extends Component {
       transfer: false,
       state: '登录',
     };
-
   }
 
 

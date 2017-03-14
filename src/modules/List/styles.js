@@ -11,16 +11,15 @@ export default StyleSheet.create({
     justifyContent: 'center',
   },
   tab: {
-    backgroundColor: '#52616a',
+    backgroundColor: '#808033',
     height: 56,
   },
   tablabel: {
-    backgroundColor: 'transparent',
-    color: 'white',
+    color: 'black',
     margin: 8,
   },
   indicator: {
-    backgroundColor: 'white',
+    backgroundColor: '#4345fd',
     position: 'absolute',
     left: 0,
     bottom: 0,

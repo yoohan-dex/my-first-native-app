@@ -1,4 +1,6 @@
+import { delay } from 'redux-saga';
 import { call, put, takeEvery, takeLatest, fork, take } from 'redux-saga/effects';
+import { Alert } from 'react-native';
 import {
   getWaitingSucceed,
   getWaitingFailed,
@@ -47,9 +49,12 @@ function* robItem() {
     const action = yield take(ROB_ITEM);
     try {
       yield call(api.car.robItem, action.id);
+      yield delay(1000);
       yield put(robSucceed());
     } catch ({ message }) {
+      yield delay(1000);
       yield put(robFailed());
+      // Alert.alert('抢单失败', message);
     }
   }
 }
@@ -81,7 +86,6 @@ function* getItemDetail() {
     const action = yield take(GET_ITEM_DETAIL);
     try {
       const result = yield call(api.car.getItemDetail, action.id);
-      console.log(result);
       const car = result.data['2'];
       const detail = {
         start: car.station_beginName,
@@ -110,6 +114,7 @@ function* getItemDetail() {
         money: car.fare,
         id: car.cargroup_orderId,
       };
+      console.log('comments: ', detail.comments);
       yield put(getItemDetailSucceed(detail));
     } catch ({ message }) {
       console.log(message);
@@ -122,7 +127,6 @@ function* getFulfilled() {
     yield take(GET_FULFILLED_ITEMS);
     try {
       const result = yield call(api.car.getFulfilled);
-      console.log('fulfilled: ', result);
       const car = result.data.KEY_SIMPLECARGROUPORDER_LIST.list;
       const list = car.map(v => ({
         start: v.station_beginName,
@@ -155,7 +159,6 @@ function* getCancelled() {
         issue: v.canceled_reason,
       }));
       yield put(getCancelledSucceed(list));
-      console.log('cancelled: ', result);
     } catch ({ message }) {
       console.log(message);
     }

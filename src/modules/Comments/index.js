@@ -13,11 +13,22 @@ import api from '../../api';
 
 import { CommentItem } from '../../components/ItemClass';
 
-
-type Props = {
-  comments: [],
+type CommnetType = {
+  name: String,
+  id: Number,
+  portrait: String,
+  content: String,
+  score: {
+    politeness:Number,
+    accurateness:Number,
+    neatness:Number,
+  }
 }
 
+
+type Props = {
+  comments: CommnetType[],
+}
 const ScoreItem = ({ name, score }) =>
   <View style={{ flexDirection: 'row' }}>
     <Icon name={name} style={{ color: '#d4addf' }} />
@@ -39,28 +50,35 @@ class Comments extends Component {
   }
 
   props: Props
-  renderItem(comments, i) {
-    const { portrait, content, score, name, id } = comments;
+  renderItem: (comment: CommnetType, i: Number) => React.CElement
+  renderItem(comment, i) {
+    const { portrait, content, score, name } = comment;
     const uri = {
       uri: 'https'.concat(portrait.slice(4)),
     };
     return (
       <Card key={i}>
-        <CardItem header>
+        <CardItem header style={{ justifyContent: 'space-between', height: 40 }}>
           <CommentItem
             uri={uri}
             leftText={name}
           />
+          { !this.props.comments ?
+            <View style={{ flex: 0, padding: 8 }}>
+              <Text>未评价</Text>
+            </View> :
+            <View />}
         </CardItem>
-        <CardItem>
-          <Text style={{ textAlign: 'center' }}>{this.state.error ? this.state.error : this.state.installed}</Text>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
-            <ScoreItem name="alarm-on" score={5} />
-            <ScoreItem name="directions-car" score={3} />
-            <ScoreItem name="insert-emoticon" score={5} />
-          </View>
-          <Text style={{ textAlign: 'center' }}>{this.state.otherMessage}</Text>
-        </CardItem>
+        { this.props.comments ?
+          <CardItem>
+            <Text style={{ textAlign: 'center', marginBottom: 5 }}>{content}</Text>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
+              <ScoreItem name="alarm-on" score={score.accurateness} />
+              <ScoreItem name="directions-car" score={score.neatness} />
+              <ScoreItem name="insert-emoticon" score={score.politeness} />
+            </View>
+          </CardItem> :
+          <View /> }
       </Card>
     );
   }

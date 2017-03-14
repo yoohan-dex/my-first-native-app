@@ -13,6 +13,7 @@ import {
   GET_FULFILLED_ITEMS_FAILED,
   GET_CANCELLED_ITEMS_SUCCEED,
   GET_CANCELLED_ITEMS_FAILED,
+  ROB_ITEM_CLEAN,
 } from '../actions/carList';
 
 export type State = {
@@ -74,6 +75,12 @@ export default function (state: State = initialState, action: Action): State {
       return {
         ...state,
         state: 'success',
+        robbing: false,
+      };
+    case ROB_ITEM_CLEAN:
+      return {
+        ...state,
+        state: '',
         robbing: false,
       };
     case GET_UNFULFILLED_ITEMS_SUCCEED:

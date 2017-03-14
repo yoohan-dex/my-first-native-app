@@ -28,11 +28,12 @@ function* mobileLogin(action) {
   try {
     const result = yield call(api.mobileLogin, action.form);
     if (result) {
-      const { KEY_DRIVER_STATE } = result.data;
+      const { KEY_DRIVER_STATE, KEY_DRIVER_ID: id, KEY_WECHAT_BINDING_RESULT: bind } = result.data;
+      console.log('user: ', JSON.stringify(result.data));
       const state = driverState(KEY_DRIVER_STATE);
       yield put(appOnload());
       yield put(loginFullfill());
-      yield put(saveUser(action.form.phone, action.form.password, state));
+      yield put(saveUser(action.form.phone, action.form.password, state, bind, id));
       yield put(setUser(action.form.phone));
     }
   } catch ({ message }) {
@@ -51,12 +52,11 @@ function* wechatLogin() {
         const { KEY_PRINCIPAL: account, KEY_TEMP_CODE_TOKEN: token } = res.data;
         if (account && token) {
           const result = yield api.login.wechatLogin(account, token);
-          console.log('I can login to the server');
-          const { KEY_DRIVER_STATE, KEY_PHONE_BINDING_RESULT: bind } = result.data;
+          const { KEY_DRIVER_STATE, KEY_PHONE_BINDING_RESULT: bind, KEY_DRIVER_ID: id } = result.data;
           const state = driverState(KEY_DRIVER_STATE);
           yield put(appOnload());
           yield put(loginFullfill());
-          yield put(saveWechatUser(account, token, state, bind));
+          yield put(saveWechatUser(account, token, state, bind, id));
         }
       } else {
         yield put(wechatLoginFailed('你还没有安装微信'));

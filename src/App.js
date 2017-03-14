@@ -26,6 +26,7 @@ type Props = {
   wechatLogin: (account: String, token: String) => void,
   user: {
     user: String,
+    id: Number,
   },
 }
 
@@ -63,8 +64,8 @@ class App extends Component {
   }
 
   componentWillUpdate(nextProps) {
-    if (!this.props.user.user && nextProps.user.user) {
-      push.getRegistrationID(id => console.log(id));
+    if (!this.props.user.user && nextProps.user.user && this.props.user.id) {
+      push(this.props.user.user.id, ['0']);
     }
     if (nextProps.app.login && !this.state.ready) {
       this.ready();

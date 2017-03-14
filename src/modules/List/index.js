@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { Animated, Text } from 'react-native';
+import { Animated } from 'react-native';
 import { TabViewAnimated, TabBar } from 'react-native-tab-view';
-
+import { View, Text } from 'native-base';
 import styles from './styles';
 import ListContainer from '../../components/ListContainer';
 
@@ -10,6 +10,12 @@ type Props = {
   fulfilled: Object[],
   cancelled: Object[],
 }
+
+const Message = () => (
+  <View style={{ marginVertical: 30 }}>
+    <Text style={{ textAlign: 'center' }}>没有订单哦</Text>
+  </View>
+);
 
 class List extends Component {
   constructor() {
@@ -74,20 +80,20 @@ class List extends Component {
           <ListContainer
             dataArray={unfulfilled}
           /> :
-          undefined;
+          <Message />;
       case '2':
         return fulfilled ?
           <ListContainer
             dataArray={fulfilled}
           /> :
-          undefined;
+          <Message />;
       case '3':
         return cancelled ?
           <ListContainer
             issue
             dataArray={cancelled}
           /> :
-          undefined;
+          <Message />;
       default:
         return null;
     }

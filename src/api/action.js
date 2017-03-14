@@ -22,6 +22,10 @@ export function fetchBalance() {
   return request('driver')('getDriverPocketBalance');
 }
 
+export function withdraw() {
+  return request('driver')('addWithdrawCash');
+}
+
 export function cancelItem(id: Number) {
   return postCar('cancelCargroupOrderByDriver', {
     cargroup_orderId: id,
@@ -34,3 +38,10 @@ export function bindPhone(phone: Number, validCode: Number) {
     sms_code: validCode,
   });
 }
+
+export function bindWechat(code: String) {
+  return post('driver')('updateDriverWechatInfoByApp', {
+    code,
+  });
+}
+

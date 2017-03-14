@@ -59,6 +59,7 @@ export type Action =
   | { type: 'ROB_ITEM', id: Number }
   | { type: 'ROB_SUCCEED' }
   | { type: 'ROB_FAILED' }
+  | { type: 'ROB_ITEM_CLEAN' }
   | { type: 'GET_UNFULFILLED_ITEMS' }
   | { type: 'GET_UNFULFILLED_ITEMS_SUCCEED', list: Object[] }
   | { type: 'GET_FULFILLED_ITEMS' }
@@ -87,7 +88,15 @@ export type Action =
   | { type: 'BIND_PHONE', phone: Number, validCode: Number }
   | { type: 'BIND_PHONE_FAILED', message: String }
   | { type: 'BIND_PHONE_SUCCEED' }
+  | { type: 'BIND_WECHAT' }
+  | { type: 'BIND_WECHAT_SUCCEED' }
+  | { type: 'BIND_WECHAT_FAILED', message: String }
   | { type: 'RELOGIN' }
+  | { type: 'FETCH_BALANCE' }
+  | { type: 'FETCH_BALANCE_SUCCEED', total: Number, withdrawMoney: Number }
+  | { type: 'WITHDRAW' }
+  | { type: 'WITHDRAW_SUCCEED' }
+  | { type: 'WITHDRAW_FAILED', message: String }
 
 
 export type Dispatch = (action:Action | Array<Action>) => any;

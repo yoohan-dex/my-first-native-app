@@ -7,6 +7,8 @@ export const GET_WAITING_FAILED = 'GET_WAITING_FAILED';
 export const ROB_ITEM = 'ROB_ITEM';
 export const ROB_SUCCEED = 'ROB_SUCCEED';
 export const ROB_FAILED = 'ROB_FAILED';
+export const ROB_ITEM_CLEAN = 'ROB_ITEM_CLEAN';
+
 export const GET_UNFULFILLED_ITEMS = 'GET_UNFULFILLED_ITEMS';
 export const GET_UNFULFILLED_ITEMS_SUCCEED = 'GET_UNFULFILLED_ITEMS_SUCCEED';
 
@@ -59,6 +61,12 @@ export function robFailed(): Action {
 export function robSucceed(): Action {
   return ({
     type: ROB_SUCCEED,
+  });
+}
+
+export function robItemClean(): Action {
+  return ({
+    type: ROB_ITEM_CLEAN,
   });
 }
 

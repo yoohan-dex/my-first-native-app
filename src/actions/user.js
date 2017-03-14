@@ -13,6 +13,7 @@ export function saveUser(user: String, password: String, state: String, bind: Bo
     password,
     state,
     bind,
+    id,
   };
 }
 

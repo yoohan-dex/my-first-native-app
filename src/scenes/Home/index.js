@@ -20,6 +20,7 @@ import {
   getUnfulfilled,
   getCancelled,
   getFulfilled,
+  robItemClean,
 } from '../../actions/carList';
 import { State } from '../../reducers/carList';
 
@@ -40,8 +41,8 @@ type Props = {
   getCancelled: () => void,
   getFulfilled: () => void,
   changeHomeState: (tab: 'home' | 'list' | 'account') => void,
+  robItemClean: () => void,
   app: { login: boolean },
-  user: Object,
 }
 
 class Home extends Component {
@@ -83,7 +84,6 @@ class Home extends Component {
   props: Props
   renderContent() {
     const { list, robbing, state, unfulfilled, message, fulfilled, cancelled } = this.props.carList;
-    const { user } = this.props;
     switch (this.props.home.tab) {
       case 'home':
         return list ?
@@ -92,8 +92,9 @@ class Home extends Component {
             state={state}
             robbing={robbing}
             robItem={this.robItem}
+            robItemClean={this.props.robItemClean}
           /> :
-          <Text style={{ textAlign: 'center', color: '#444', marginTop: 30 }}>{JSON.stringify(user)}</Text>;
+          <Text style={{ textAlign: 'center', color: '#444', marginTop: 30 }}>{message}</Text>;
       case 'list':
         return (
           <List
@@ -176,6 +177,7 @@ function bindActions(dispatch) {
     changeHomeState: tab => dispatch(changeHomeState(tab)),
     getCancelled: () => dispatch(getCancelled()),
     getFulfilled: () => dispatch(getFulfilled()),
+    robItemClean: () => dispatch(robItemClean()),
   };
 }
 
@@ -184,7 +186,6 @@ function mapStateToProps(state) {
     carList: state.carList,
     home: state.home,
     app: state.app,
-    user: state.user,
   };
 }
 

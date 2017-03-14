@@ -7,6 +7,7 @@ import {
   Button,
   Icon,
 } from 'native-base';
+import { Alert } from 'react-native';
 import Spinner from 'react-native-loading-spinner-overlay';
 
 import { connect } from 'react-redux';
@@ -63,10 +64,6 @@ class ItemDetail extends Component {
     this.cancel = this.cancel.bind(this);
   }
 
-  componentDidMount() {
-    console.log(this.props);
-  }
-
   getCurrentPosition(callback) { // eslint-disable-line
     navigator.geolocation.getCurrentPosition((position) => { // eslint-disable-line
       const { latitude, longitude } = position.coords;
@@ -89,18 +86,32 @@ class ItemDetail extends Component {
     this.props.changeHomeState('home');
   }
   cancel() {
-    this.props.cancelItem(this.props.detail.id);
+    Alert.alert('确定取消订单吗？', '取消订单会给乘客带来困扰，并且系统将会扣出您的信用分', [{
+      text: '我不取消了', onPress: () => console.log('nothing'), style: 'cancel',
+    }, {
+      text: '确定取消', onPress: () => this.props.cancelItem(this.props.detail.id), style: 'destructive',
+    }]);
   }
   confirmReceive() {
-    this.getCurrentPosition((latitude, longitude) =>
-      this.props.receivePassenger(this.props.detail.id, latitude, longitude),
-    );
+    Alert.alert('确定接收到所有乘客了吗？', '', [{
+      text: '点错了', onPress: () => console.log('nothing'), style: 'cancel',
+    }, {
+      text: '确定接到',
+      onPress: () => this.getCurrentPosition((latitude, longitude) =>
+        this.props.receivePassenger(this.props.detail.id, latitude, longitude)),
+      style: 'default',
+    }]);
   }
 
   confirmArrival() {
-    this.getCurrentPosition((latitude, longitude) =>
-      this.props.arrivalConfirm(this.props.detail.id, latitude, longitude),
-    );
+    Alert.alert('确定已经送达了吗？', '', [{
+      text: '点错了', onPress: () => console.log('nothing'), style: 'cancel',
+    }, {
+      text: '确定接到',
+      onPress: () => this.getCurrentPosition((latitude, longitude) =>
+        this.props.arrivalConfirm(this.props.detail.id, latitude, longitude)),
+      style: 'default',
+    }]);
   }
 
   props: Props
