@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { actions } from 'react-native-navigation-redux-helpers';
+import { Alert } from 'react-native';
 import {
   Container,
   View,
@@ -73,13 +74,15 @@ class MobileLogin extends Component {
 
   login() {
     const data: Data = this.props.data;
-    console.log(data);
-    if (data.values) {
+    const { syncErrors } = data;
+    if (data.values && !syncErrors) {
       const { phone, password } = data.values;
       if (phone && password) {
-        console.log(data.values);
         this.props.loginAction(data.values);
       }
+    } else if (syncErrors) {
+      const errors = Object.keys(syncErrors).map(v => syncErrors[v]);
+      Alert.alert(errors[0]);
     }
   }
 
@@ -141,6 +144,23 @@ class MobileLogin extends Component {
   }
 }
 
+const validate = (values: Login) => {
+  const errors = {};
+  const { phone, validCode, password } = values;
+  if (!phone) {
+    errors.phone = '手机号不可为空';
+  } else if (phone.length !== 11) {
+    errors.phone = '请输入正确的手机号';
+  } else if (!validCode) {
+    errors.validCode = '验证码不可为空';
+  } else if (validCode !== 4) {
+    errors.validCode = '验证码必须为4位数';
+  } else if (!password) {
+    errors.password = '密码不可为空';
+  }
+  return errors;
+};
+
 function bindActions(dispatch) {
   return {
     popRoute: key => dispatch(popRoute(key)),
@@ -160,5 +180,6 @@ const mapStateToProps = state => ({
 
 const Final = reduxForm({
   form: 'mobileLogin',
+  validate,
 })(MobileLogin);
 export default connect(mapStateToProps, bindActions)(Final);

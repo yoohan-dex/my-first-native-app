@@ -1,5 +1,5 @@
 import { delay } from 'redux-saga';
-import { call, put, takeEvery, takeLatest, fork, take } from 'redux-saga/effects';
+import { call, put, fork, take } from 'redux-saga/effects';
 import { Alert } from 'react-native';
 import {
   getWaitingSucceed,
@@ -14,10 +14,8 @@ import {
   getItemDetailSucceed,
   GET_FULFILLED_ITEMS,
   getFulfilledSucceed,
-  getFulfilledFailed,
   GET_CANCELLED_ITEMS,
   getCancelledSucceed,
-  getCancelledFailed,
 } from '../actions/carList';
 
 import api from '../api';
@@ -76,7 +74,7 @@ function* getUnfulfilled() {
       }));
       yield put(getUnfulfilledSucceed(list));
     } catch ({ message }) {
-      console.log(message);
+      // ...
     }
   }
 }
@@ -114,10 +112,9 @@ function* getItemDetail() {
         money: car.fare,
         id: car.cargroup_orderId,
       };
-      console.log('comments: ', detail.comments);
       yield put(getItemDetailSucceed(detail));
     } catch ({ message }) {
-      console.log(message);
+      Alert.alert(message);
     }
   }
 }
@@ -138,7 +135,7 @@ function* getFulfilled() {
       }));
       yield put(getFulfilledSucceed(list));
     } catch ({ message }) {
-      console.log(message);
+      // ...
     }
   }
 }
@@ -160,7 +157,7 @@ function* getCancelled() {
       }));
       yield put(getCancelledSucceed(list));
     } catch ({ message }) {
-      console.log(message);
+      // ..
     }
   }
 }

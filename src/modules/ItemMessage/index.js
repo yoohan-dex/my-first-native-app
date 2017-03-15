@@ -5,7 +5,6 @@ import {
   Grid,
   Row,
   H1,
-  H2,
   H3,
 } from 'native-base';
 import Countdown from '../../components/Countdown';
@@ -33,8 +32,8 @@ type Props = {
 }
 
 const OngoingTitle = ({ dead }: { dead: number }) =>
-  <View style={{ justifyContent: 'center', alignItems: 'center', marginHorizontal: 15, marginVertical: 10 }}>
-    <H2 style={{ color: '#555', fontWeight: 'bold', margin: 10, padding: 10, borderBottomColor: '#555', borderBottomWidth: 1 }}>发车倒计时</H2>
+  <View style={{ justifyContent: 'center', alignItems: 'center', marginHorizontal: 15 }}>
+    <H3 style={{ color: '#555', fontWeight: 'bold', margin: 10, padding: 10, borderBottomColor: '#555', borderBottomWidth: 1 }}>发车倒计时</H3>
     <Countdown
       dead={dead}
       style={{ fontSize: 40, fontWeight: 'bold' }}

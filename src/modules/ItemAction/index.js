@@ -36,6 +36,7 @@ const OngoingAction =
       </Col>
       <Col size={50}>
         <Button
+          style={{ backgroundColor: '#6B7E88' }}
           onPress={action}
           block
         >已接到所有乘客</Button>
@@ -54,6 +55,7 @@ const DrivingAction = ({ action }: { action: Function }) =>
   <Grid style={{ bottom: 0, flex: 0, paddingHorizontal: 5, paddingVertical: 5, justifyContent: 'space-between' }}>
     <Col size={50}>
       <Button
+        style={{ backgroundColor: '#6B7E88' }}
         onPress={action}
         block
       >已经送达</Button>
@@ -64,6 +66,7 @@ const CheckingAction = ({ back }: { back: Function }) =>
   <Grid style={{ bottom: 0, flex: 0, paddingHorizontal: 5, paddingVertical: 5, justifyContent: 'space-between' }}>
     <Col size={50}>
       <Button
+        style={{ backgroundColor: '#6B7E88' }}
         onPress={back}
         block
       >再去接一单</Button>

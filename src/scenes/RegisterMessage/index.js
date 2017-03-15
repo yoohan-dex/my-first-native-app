@@ -5,7 +5,7 @@ import {
   Title,
   Button,
 } from 'native-base';
-import { View as NativeView, ScrollView } from 'react-native';
+import { View as NativeView, ScrollView, Alert } from 'react-native';
 import { reduxForm } from 'redux-form';
 import { connect } from 'react-redux';
 import {
@@ -110,25 +110,32 @@ class RegisterMessage extends Component {
 
   uploadPerson(callback) {
     const data: PersonData = this.props.data;
-    if (data.values && !data.syncErrors.realName && !data.syncErrors.personCard) {
+    const { syncErrors } = data;
+    if (data.values && !syncErrors) {
       const { personCard, realName } = data.values;
       if (realName && personCard) {
         this.props.uploadPerson({ name: realName, id: personCard });
         callback();
       }
+    } else if (syncErrors) {
+      const errors = Object.keys(syncErrors).map(v => syncErrors[v]);
+      Alert.alert(errors[0]);
     }
   }
 
   uploadCar(callback) {
     const data: CarData = this.props.data;
     const { selectedArea } = this.props.state;
-    if (data.values && !data.syncErrors) {
-      console.log(data.values);
+    const { syncErrors } = data;
+    if (data.values && !syncErrors) {
       const { carNumber: id, carBrand: brand } = data.values;
       if (id && brand && selectedArea) {
         this.props.uploadCar({ id, brand, selectedArea });
         callback();
       }
+    } else if (syncErrors) {
+      const errors = Object.keys(syncErrors).map(v => syncErrors[v]);
+      Alert.alert(errors[0]);
     }
   }
 
@@ -255,15 +262,15 @@ const validate = (values) => {
   const errors = {};
   const { realName, personCard, carNumber, carBrand } = values;
   if (!realName) {
-    errors.realName = 'Required';
+    errors.realName = '真实姓名不能为空';
   } else if (!personCard) {
-    errors.personCard = 'Required';
+    errors.personCard = '身份证号码不能为空';
   } else if (personCard.length !== 15 && personCard.length !== 18) {
-    errors.personCard = 'Must be 15 characters or less';
+    errors.personCard = '请填入正确的身份证号码';
   } else if (!carBrand) {
-    errors.carBrand = 'Required';
+    errors.carBrand = '汽车型号不能为空';
   } else if (!carNumber) {
-    errors.carNumber = 'Required';
+    errors.carNumber = '车牌不能为空';
   }
   return errors;
 };

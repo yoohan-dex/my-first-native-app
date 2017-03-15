@@ -1,6 +1,7 @@
 // @flow
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { Alert } from 'react-native';
 import { actions } from 'react-native-navigation-redux-helpers';
 import {
   Container,
@@ -76,11 +77,15 @@ class MobileRegister extends Component {
 
   mobileRegister() {
     const data: Data = this.props.data;
-    if (data.values) {
+    const { syncErrors } = data;
+    if (data.values && !syncErrors) {
       const { phone, password, validCode } = data.values;
       if (phone && password && validCode) {
         this.props.registerAction(data.values);
       }
+    } else if (syncErrors) {
+      const errors = Object.keys(syncErrors).map(v => syncErrors[v]);
+      Alert.alert(errors[0]);
     }
   }
 
@@ -150,15 +155,17 @@ const validate = (values: Register) => {
   const errors = {};
   const { phone, validCode, password } = values;
   if (!phone) {
-    errors.phone = 'Required';
+    errors.phone = '手机号不可为空';
   } else if (phone.length !== 11) {
-    errors.phone = 'Must be 11 number';
+    errors.phone = '请输入正确的手机号';
   } else if (!validCode) {
-    errors.validCode = 'Required';
+    errors.validCode = '验证码不可为空';
+  } else if (validCode !== 4) {
+    errors.validCode = '验证码必须为4位数';
   } else if (!password) {
-    errors.password = 'Required';
+    errors.password = '密码不可为空';
   } else if (password.length < 8) {
-    errors.password = 'Must be 8 characters or more';
+    errors.password = '密码必须不小于八位';
   }
   return errors;
 };
@@ -182,5 +189,6 @@ const component = reduxForm({
   form: 'register',
   validate,
 })(MobileRegister);
+
 export default connect(mapStateToProps, bindActions)(component);
 

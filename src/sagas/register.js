@@ -1,6 +1,5 @@
 import { call, put, takeEvery, takeLatest, fork, take } from 'redux-saga/effects';
 import {
-  REGISTER_ERROR,
   REGISTER_FULLFILL,
   MOBILE_REGISTER,
   UPLOAD_IMAGE,
@@ -11,7 +10,6 @@ import {
   uploadFailed,
   registerError,
   getAreaListSuccess,
-  GET_AREA_LIST_SUCCESS,
 } from '../actions/register';
 import { saveUser } from '../actions/user';
 import { setUser } from '../actions/global';
@@ -49,14 +47,11 @@ function* uploadMessage() {
 function* getArea() {
   while (true) {
     const a = yield take(GET_AREA_LIST);
-    console.log('area: ', a);
     try {
       const result = yield call(api.mobileRgister.getServiceAreaList);
       const list = result.data.KEY_LIST_MARKETAREAS;
-      console.log('list:', list);
       yield put(getAreaListSuccess(list));
     } catch ({ message }) {
-      console.log(message);
       yield put(registerError(message));
     }
   }
@@ -65,15 +60,11 @@ function* getArea() {
 function* uploadPerson() {
   while (true) {
     const action = yield take(UPLOAD_PERSONAL_MESSAGE);
-    console.log(action.form);
     const { id, name } = action.form;
-    console.log('id: ', id);
-    console.log('name: ', name);
     try {
       yield call(api.mobileRgister.uploadPersonalCard, name, id);
     } catch (err) {
       yield put(registerError(err));
-      console.log('error': err);
     }
   }
 }
@@ -83,11 +74,9 @@ function* uploadCar() {
     const action = yield take(UPLOAD_CAR_MESSAGE);
     const { id, brand, selectedArea } = action.form;
     try {
-      const result = yield call(api.mobileRgister.uploadCarInfo, id, brand, selectedArea);
-      console.log('hahha', result);
+      yield call(api.mobileRgister.uploadCarInfo, id, brand, selectedArea);
     } catch (err) {
       yield put(registerError(err));
-      console.log('error': err);
     }
   }
 }

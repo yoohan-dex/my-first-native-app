@@ -1,10 +1,12 @@
+import { delay } from 'redux-saga';
 import { call, put, fork, take } from 'redux-saga/effects';
-
+import { Alert } from 'react-native';
 import {
   RESET_PASSWORD,
   resetPasswordSucceed,
 } from '../actions/reset';
 
+import { mobileLogin } from '../actions/login';
 
 import api from '../api';
 
@@ -16,8 +18,10 @@ function* resetPassword() {
       const { phone, validCode, newPassword } = action;
       yield call(api.reset.resetPassword, phone, validCode, newPassword);
       yield put(resetPasswordSucceed());
-    } catch (e) {
-      console.log(e);
+      yield delay(200);
+      yield put(mobileLogin({ phone, password: newPassword }));
+    } catch ({ message }) {
+      Alert.alert(message);
     }
   }
 }

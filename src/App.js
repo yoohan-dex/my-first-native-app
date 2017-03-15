@@ -16,6 +16,7 @@ import { getStoredState } from 'redux-persist';
 // import Icon from 'react-native-vector-icons/EvilIcons';
 // import push from './utils/push';
 import push from 'jpush-react-native';
+
 import abyss from './images/monkey.jpeg';
 import AppNavigator from './AppNavigator';
 import { mobileLogin, wechatAutoLogin } from './actions/login';

@@ -8,10 +8,9 @@ import {
   Header,
   Title,
   Button,
-  Icon,
   Text,
 } from 'native-base';
-
+import { Alert } from 'react-native';
 import Spinner from 'react-native-loading-spinner-overlay';
 import { Field, reduxForm } from 'redux-form';
 
@@ -80,12 +79,16 @@ class BindPhone extends Component {
   }
   bindPhone: () => void
   bindPhone() {
-    const { values } = this.props.data;
-    if (values) {
-      const { phone, validCode } = values;
+    const { data } = this.props;
+    const { syncErrors } = data;
+    if (data.values && !syncErrors) {
+      const { phone, validCode } = data.values;
       if (phone && validCode) {
         this.props.bindPhone(phone, validCode);
       }
+    } else if (syncErrors) {
+      const errors = Object.keys(syncErrors).map(v => syncErrors[v]);
+      Alert.alert(errors[0]);
     }
   }
 
@@ -140,15 +143,17 @@ class BindPhone extends Component {
   }
 }
 
-const validate = (values: { phone: number, validCode: number }) => {
+const validate = (values) => {
   const errors = {};
   const { phone, validCode } = values;
   if (!phone) {
-    errors.phone = 'Required';
+    errors.phone = '手机号不可为空';
   } else if (phone.length !== 11) {
-    errors.phone = 'Must be 11 number';
+    errors.phone = '请输入正确的手机号';
   } else if (!validCode) {
-    errors.validCode = 'Required';
+    errors.validCode = '验证码不可为空';
+  } else if (validCode !== 4) {
+    errors.validCode = '验证码必须为4位数';
   }
   return errors;
 };

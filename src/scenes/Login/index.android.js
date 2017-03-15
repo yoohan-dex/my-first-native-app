@@ -67,7 +67,7 @@ class Login extends Component {
               style={s.btn}
             >
               <Icon name="weixin" />
-              <Text>{this.props.user.state ? JSON.stringify(this.props.user) : '微信快捷登陆'}</Text>
+              <Text>微信快捷登陆</Text>
             </Button>
             <View style={s.otherFormWrap}>
               <Button

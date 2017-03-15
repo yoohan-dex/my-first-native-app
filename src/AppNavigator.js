@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { BackAndroid, StatusBar, NavigationExperimental } from 'react-native';
+import { BackAndroid, StatusBar, NavigationExperimental, Alert } from 'react-native';
 import { connect } from 'react-redux';
 import { View } from 'native-base';
 import { actions } from 'react-native-navigation-redux-helpers';
@@ -56,9 +56,7 @@ class AppNavigator extends Component {
     this.watchState = this.watchState.bind(this);
     this.watchLogin = this.watchLogin.bind(this);
     this.watchLogout = this.watchLogout.bind(this);
-    this.initialRoute = this.initialRoute.bind(this);
-    this.homeToLogin = this.homeToLogin.bind(this);
-    this.loginToHome = this.loginToHome.bind(this);
+    this.resetTo = this.resetTo.bind(this);
     this.checkState = this.checkState.bind(this);
     this.watchDriverState = this.watchDriverState.bind(this);
     this.checkUserType = this.checkUserType.bind(this);
@@ -81,16 +79,14 @@ class AppNavigator extends Component {
       return true;
     });
 
-    // this.checkState(this.props.user.state);
     this.checkUserType();
     if (!this.props.app.login) {
-      this.homeToLogin();
+      this.resetTo('login');
     }
   }
 
   componentWillUpdate(nextProps) {
     this.watchLogin(nextProps);
-    // this.watchState(nextProps);
     this.watchLogout(nextProps);
   }
 
@@ -110,10 +106,7 @@ class AppNavigator extends Component {
   checkUserType() {
     const { userType, bind } = this.props.user;
     if (userType === 'wechat' && !bind) {
-      const { navigation } = this.props;
-      const currentRoute = navigation.routes[navigation.routes.length - 1].key;
-
-      this.replaceRoute(currentRoute, 'bind-phone');
+      this.resetTo('bind-phone');
     } else {
       this.checkState(this.props.user.state);
     }
@@ -121,36 +114,26 @@ class AppNavigator extends Component {
 
   watchUserType(preProps) {
     if (preProps.user.userType !== this.props.user.userType) {
-      setTimeout(() => this.checkUserType(), 1);
+      this.checkUserType();
     }
   }
 
-  initialRoute() {
+  resetTo(key) {
     try {
       this.props.reset([{
-        key: 'home',
+        key,
         index: 0,
       }]);
     } catch (e) {
-      // nothing
+      // ...nothing
     }
   }
-  homeToLogin() {
-    this.replaceRoute('home', 'login');
-  }
 
-  loginToHome() {
-    this.replaceRoute('login', 'home');
-  }
   watchlogin: (nextProps: Props) => void
   watchLogin(nextProps) {
     const { app } = this.props;
     if (!app.login && nextProps.app.login) {
-      try {
-        this.initialRoute();
-      } catch (e) {
-        // nothing..
-      }
+      // this.resetTo('home');
     }
   }
   watchState: (nextProps: Props) => void
@@ -161,19 +144,23 @@ class AppNavigator extends Component {
   }
 
   checkState(state: String) {
-    const { navigation } = this.props;
-    const currentRoute = navigation.routes[navigation.routes.length - 1].key;
-    console.log(currentRoute);
     switch (state) {
       case HAVE_REJECTED:
       case NOT_SUBMITTED:
-        this.replaceRoute(currentRoute, 'register-message');
+        this.resetTo('register-message');
         break;
       case HAVE_SUBMITTED:
-        this.replaceRoute(currentRoute, 'upload-message');
+        this.resetTo('upload-message');
         break;
       case PASS:
+        this.resetTo('home');
+        break;
       case ISSUE:
+        this.resetTo('home');
+        setTimeout(() => {
+          Alert.alert('你的账号异常，不能看到可抢订单');
+        }, 500);
+        break;
       default:
         break;
     }
@@ -182,13 +169,8 @@ class AppNavigator extends Component {
   watchLogout(nextProps) {
     const { app } = this.props;
     if (app.login && !nextProps.app.login) {
-      this.initialRoute();
-      this.homeToLogin();
+      this.resetTo('login');
     }
-  }
-
-  replaceRoute(from, to) {
-    this.props.replaceAt(from, { key: to }, this.props.navigation.key);
   }
 
   popRoute() {
@@ -228,7 +210,7 @@ class AppNavigator extends Component {
       <View style={{ flex: 1, width: null, height: null }}>
         <StatusBar
           animated
-          backgroundColor={login ? 'transparent' : '#6B7E88'}
+          backgroundColor={login ? 'transparent' : '#4c5763'}
           barStyle={login ? 'light-content' : 'default'}
           translucent={login}
         />

@@ -79,6 +79,10 @@ function* cancel() {
         index: 0,
       }], 'global'));
       yield put(changeHomeState('home'));
+      yield put(reset([{
+        key: 'home',
+        index: 0,
+      }], 'global'));
     } catch ({ message }) {
       yield put(cancelSucceed());
       yield delay(200);
@@ -95,6 +99,10 @@ function* bindPhone() {
       yield call(api.action.bindPhone, phone, validCode);
       yield put(bindPhoneSucceed());
       yield put(relogin());
+      yield put(reset([{
+        key: 'home',
+        index: 0,
+      }], 'global'));
     } catch ({ message }) {
       yield put(bindPhoneFailed(message));
     }

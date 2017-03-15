@@ -1,7 +1,8 @@
 import { call, put, takeEvery, takeLates, take, fork } from 'redux-saga/effects';
-import { AsyncStorage } from 'react-native';
+import { AsyncStorage, Alert } from 'react-native';
 import { purgeStoredState, getStoredState } from 'redux-persist';
 import * as wechat from 'react-native-wechat';
+import { actions } from 'react-native-navigation-redux-helpers';
 
 import { driverState } from '../utils/parseState';
 
@@ -24,12 +25,13 @@ import { changeHomeState } from '../actions/home';
 
 import api from '../api';
 
+const { reset } = actions;
+
 function* mobileLogin(action) {
   try {
     const result = yield call(api.mobileLogin, action.form);
     if (result) {
       const { KEY_DRIVER_STATE, KEY_DRIVER_ID: id, KEY_WECHAT_BINDING_RESULT: bind } = result.data;
-      console.log('user: ', JSON.stringify(result.data));
       const state = driverState(KEY_DRIVER_STATE);
       yield put(appOnload());
       yield put(loginFullfill());
@@ -62,7 +64,7 @@ function* wechatLogin() {
         yield put(wechatLoginFailed('你还没有安装微信'));
       }
     } catch ({ message }) {
-      yield put(wechatLoginFailed(message));
+      Alert.alert(message);
     }
   }
 }
@@ -101,7 +103,6 @@ function* relogin() {
     const states = yield getStoredState({ storage: AsyncStorage });
     const { account, token } = states.user;
     try {
-      yield put(logout());
       if (account && token) {
         const result = yield api.login.wechatLogin(account, token);
         const { KEY_DRIVER_STATE, KEY_PHONE_BINDING_RESULT: bind } = result.data;
@@ -109,6 +110,10 @@ function* relogin() {
         yield put(appOnload());
         yield put(loginFullfill());
         yield put(saveWechatUser(account, token, state, bind));
+        yield put(reset([{
+          key: 'home',
+          index: 0,
+        }], 'global'));
       }
     } catch (e) {
       // ...
