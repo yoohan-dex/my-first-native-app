@@ -29,6 +29,7 @@ type Props = {
   end: string,
   money: number,
   dead: number,
+  dispute: Object,
 }
 
 const OngoingTitle = ({ dead }: { dead: number }) =>
@@ -40,10 +41,12 @@ const OngoingTitle = ({ dead }: { dead: number }) =>
     />
   </View>;
 
-const CommontTitle = ({ h1, h3 }: {h1: String, h3: String}) =>
+const CommonTitle = ({ h1, h3, money, reason }: {h1: String, h3: String, money: ?string, reason: ?string}) =>
   <View style={{ justifyContent: 'center', alignItems: 'center', marginHorizontal: 15, marginVertical: 10 }}>
     <H1 style={{ color: '#555', fontWeight: 'bold', margin: 10 }}>{h1}</H1>
-    <H3 style={{ color: '#555', lineHeight: 0 }}>{h3}</H3>
+    <Text style={{ color: '#555' }}>{h3}</Text>
+    { money ? <Text style={{ color: '#555' }}>本单最终收入 {money} 元</Text> : undefined}
+    { reason ? reason.map((v, i) => <Text key={i} style={{ color: '#555' }}>纠纷原因: {v}</Text>) : undefined}
   </View>;
 
 class ItemMessage extends Component {
@@ -57,37 +60,44 @@ class ItemMessage extends Component {
   props: Props
 
   renderTitle() {
-    const { state, dead } = this.props;
-
+    const { state, dead, dispute } = this.props;
     switch (state) {
       case ONGOING:
         return <OngoingTitle dead={dead} />;
       case CONFIRM_RECEIVE:
         return (
-          <CommontTitle
+          <CommonTitle
             h1="已经出发"
             h3="一路顺风，开车要小心哦"
           />
         );
       case CONFIRM_ARRIVAL:
         return (
-          <CommontTitle
+          <CommonTitle
             h1="已经送达"
             h3="等乘客确认后金额即可收入钱包"
           />
         );
       case ORDER_FULFILLED:
         return (
-          <CommontTitle
+          <CommonTitle
             h1="订单已完成"
             h3="订单收入可在钱包中确认"
           />
         );
+      case ORDER_ISSUE:
+        return (
+          <CommonTitle
+            h1="订单纠纷处理中"
+            reason={dispute.reason}
+          />
+        );
       case ORDER_ISSUE_OVER:
         return (
-          <CommontTitle
+          <CommonTitle
             h1="订单纠纷结束"
-            h3="如有异议可以致电大圣客服"
+            h3={dispute.result}
+            money={dispute.money}
           />
         );
       default:

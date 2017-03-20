@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Card } from 'native-base';
+import { Card, View } from 'native-base';
 import { connect } from 'react-redux';
 import { actions } from 'react-native-navigation-redux-helpers';
 
@@ -7,6 +7,7 @@ import { Normal, Cancelled } from '../ListRow';
 import {
   getItemDetail,
 } from '../../actions/carList';
+import { decreaseItemBadge } from '../../actions/home';
 
 const {
   pushRoute,
@@ -18,6 +19,7 @@ type Props = {
   navigation: Object,
   getItemDetail: (id: number) => void,
   issue: Boolean,
+  decreaseItemBadge: (id: number) => void,
 }
 
 class CurrentContainer extends Component {
@@ -32,7 +34,8 @@ class CurrentContainer extends Component {
   handlePress(id) {
     return () => {
       this.props.getItemDetail(id);
-      this.props.pushRoute({ key: 'item-detail', id }, this.props.navigation.key);
+      this.props.pushRoute({ key: 'item-detail' }, this.props.navigation.key);
+      this.props.decreaseItemBadge(id);
     };
   }
 
@@ -60,11 +63,14 @@ class CurrentContainer extends Component {
       />
     );
   }
+
   render() {
     return (
       <Card
         renderRow={this.renderRow}
         dataArray={this.props.dataArray}
+        scrollRenderAheadDistance={200}
+        initialListSize={100}
       />
     );
   }
@@ -74,6 +80,7 @@ function bindActions(dispatch) {
   return {
     pushRoute: (route, key) => dispatch(pushRoute(route, key)),
     getItemDetail: id => dispatch(getItemDetail(id)),
+    decreaseItemBadge: (id: number) => dispatch(decreaseItemBadge(id)),
   };
 }
 

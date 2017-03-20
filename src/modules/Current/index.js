@@ -34,7 +34,12 @@ class Current extends Component {
 
   state: State
 
-  componentDidUpdate() {
+  componentDidUpdate(preProps) {
+    if (this.props.rows !== preProps.rows) {
+      this.setState((s, p) => ({
+        buttonState: p.rows.map(() => 'add'),
+      }));
+    }
     this.watchState();
   }
   onPress(index, id) {
@@ -78,26 +83,21 @@ class Current extends Component {
     });
   }
   props: Props
-  renderRow() {
-    const { rows } = this.props;
-    return rows.map((v, i) => (
-      <HomeRow
-        key={i}
-        start={v.start}
-        end={v.end}
-        time={v.time}
-        money={v.money}
-        buttonState={this.state.buttonState[i]}
-        add={this.onPress(i, v.id)}
-        adding={this.state.adding}
-      />
-    ));
-  }
-
   render() {
     return (
       <View>
-        {this.renderRow()}
+        {this.props.rows.map((v, i) => (
+          <HomeRow
+            key={i}
+            start={v.start}
+            end={v.end}
+            time={v.time}
+            money={v.money}
+            buttonState={this.state.buttonState[i]}
+            add={this.onPress(i, v.id)}
+            adding={this.state.adding}
+          />
+        ))}
       </View>
     );
   }

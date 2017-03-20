@@ -53,14 +53,12 @@ class AppNavigator extends Component {
     super(props);
 
     this._renderScene = this._renderScene.bind(this);
-    this.watchState = this.watchState.bind(this);
-    this.watchLogin = this.watchLogin.bind(this);
     this.watchLogout = this.watchLogout.bind(this);
     this.resetTo = this.resetTo.bind(this);
     this.checkState = this.checkState.bind(this);
     this.watchDriverState = this.watchDriverState.bind(this);
     this.checkUserType = this.checkUserType.bind(this);
-    this.watchUserType = this.watchUserType.bind(this);
+    this.configAndroidBackButton = this.configAndroidBackButton.bind(this);
     this.state = {
       driverState: '',
     };
@@ -68,38 +66,23 @@ class AppNavigator extends Component {
 
 
   componentDidMount() {
-    BackAndroid.addEventListener('hardwareBackPress', () => {
-      const routes = this.props.navigation.routes;
-      const key = routes[routes.length - 1].key;
-      if (key === 'home' || key === 'login' || key === 'register-message' || key === 'bind-phone' || key === 'upload-message') {
-        return false;
-      }
-
-      this.props.popRoute(this.props.navigation.key);
-      return true;
-    });
-
     this.checkUserType();
     if (!this.props.app.login) {
       this.resetTo('login');
     }
+    this.configAndroidBackButton();
   }
 
-  componentWillUpdate(nextProps) {
-    this.watchLogin(nextProps);
-    this.watchLogout(nextProps);
-  }
-
-  componentDidUpdate(preProps) {
-    this.watchDriverState(preProps);
-    this.watchUserType(preProps);
+  componentDidUpdate(p) {
+    this.watchDriverState(p);
+    this.watchLogout(p);
   }
 
   watchDriverState(preProps) {
     if (preProps.user.state !== this.props.user.state) {
       this.setState({
         driverState: this.props.user.state,
-      });
+      }, this.checkUserType);
     }
   }
 
@@ -112,12 +95,6 @@ class AppNavigator extends Component {
     }
   }
 
-  watchUserType(preProps) {
-    if (preProps.user.userType !== this.props.user.userType) {
-      this.checkUserType();
-    }
-  }
-
   resetTo(key) {
     try {
       this.props.reset([{
@@ -125,22 +102,21 @@ class AppNavigator extends Component {
         index: 0,
       }]);
     } catch (e) {
-      // ...nothing
+      // ...
     }
   }
 
-  watchlogin: (nextProps: Props) => void
-  watchLogin(nextProps) {
-    const { app } = this.props;
-    if (!app.login && nextProps.app.login) {
-      // this.resetTo('home');
-    }
-  }
-  watchState: (nextProps: Props) => void
-  watchState(nextProps) {
-    if (this.props.user.state !== nextProps.user.state) {
-      this.checkState(this.state.driverState);
-    }
+  configAndroidBackButton() {
+    BackAndroid.addEventListener('hardwareBackPress', () => {
+      const routes = this.props.navigation.routes;
+      const key = routes[routes.length - 1].key;
+      if (key === 'home' || key === 'login' || key === 'register-message' || key === 'bind-phone' || key === 'upload-message') {
+        return false;
+      }
+
+      this.props.popRoute(this.props.navigation.key);
+      return true;
+    });
   }
 
   checkState(state: String) {
@@ -166,9 +142,8 @@ class AppNavigator extends Component {
     }
   }
 
-  watchLogout(nextProps) {
-    const { app } = this.props;
-    if (app.login && !nextProps.app.login) {
+  watchLogout(preProps) {
+    if (preProps.app.login && !this.props.app.login) {
       this.resetTo('login');
     }
   }

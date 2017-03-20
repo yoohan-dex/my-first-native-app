@@ -8,20 +8,20 @@ import {
   Text,
   Icon,
 } from 'native-base';
-import { ScrollView, Image } from 'react-native';
+import { ScrollView, Image, Platform } from 'react-native';
 import api from '../../api';
 
 import { CommentItem } from '../../components/ItemClass';
 
 type CommnetType = {
-  name: String,
-  id: Number,
-  portrait: String,
-  content: String,
+  name: string,
+  id: number,
+  portrait: string,
+  content: string,
   score: {
-    politeness:Number,
-    accurateness:Number,
-    neatness:Number,
+    politeness:number,
+    accurateness:number,
+    neatness:number,
   }
 }
 
@@ -29,7 +29,7 @@ type CommnetType = {
 type Props = {
   comments: CommnetType[],
 }
-const ScoreItem = ({ name, score }) =>
+const ScoreItem = ({ name, score }: { name: string, score: number }) =>
   <View style={{ flexDirection: 'row' }}>
     <Icon name={name} style={{ color: '#d4addf' }} />
     <Text style={{ lineHeight: 22, color: '#444', marginHorizontal: 5 }}>{score}</Text>
@@ -51,25 +51,25 @@ class Comments extends Component {
 
   props: Props
   renderItem: (comment: CommnetType, i: Number) => React.CElement
-  renderItem(comment, i) {
+  renderItem(comment: CommnetType, i) {
     const { portrait, content, score, name } = comment;
     const uri = {
       uri: 'https'.concat(portrait.slice(4)),
     };
     return (
       <Card key={i}>
-        <CardItem header style={{ justifyContent: 'space-between', height: 40 }}>
+        <CardItem header style={[Platform.OS === 'ios' ? { height: 50 } : {}, { justifyContent: 'space-between' }]}>
           <CommentItem
             uri={uri}
             leftText={name}
           />
-          { !this.props.comments ?
-            <View style={{ flex: 0, padding: 8 }}>
+          { !content ?
+            <View style={[Platform.OS === 'ios' ? { padding: 8 } : {}, { flex: 0 }]}>
               <Text>未评价</Text>
             </View> :
             <View />}
         </CardItem>
-        { this.props.comments ?
+        {score.accurateness ?
           <CardItem>
             <Text style={{ textAlign: 'center', marginBottom: 5 }}>{content}</Text>
             <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>

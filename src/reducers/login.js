@@ -52,7 +52,7 @@ export default function (state: State = initialState, action: Action) {
     case WECHAT_LOGIN:
       return {
         ...state,
-        pending: true,
+        pending: false,
         error: '',
       };
     case WECHAT_LOGIN_SUCCEED:

@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { actions } from 'react-native-navigation-redux-helpers';
 import { Alert } from 'react-native';
@@ -13,18 +13,15 @@ import {
 } from 'native-base';
 
 import { Field, reduxForm } from 'redux-form';
-import Spinner from 'react-native-loading-spinner-overlay';
 
 import RenderField from '../../components/RenderField';
 import myTheme from '../../theme/base-theme';
 import s from './styles';
 
-// import request from '../../utils/request';
 import { mobileLogin } from '../../actions/login';
 import { removeError } from '../../actions/global';
 
 import { Login } from '../../actions/types';
-// import InputField from '../../gear/InputField';
 
 const {
   popRoute,
@@ -41,11 +38,9 @@ type Props = {
   popRoute: Function,
   navigation: Object,
   state: Object,
-  global: Object,
   data: Object,
   loginAction: Function<Login>,
   removeError: Function,
-  replaceAt: Function,
   pushRoute: (route: { key: string }, key: string) => void,
 }
 
@@ -101,11 +96,6 @@ class MobileLogin extends Component {
           <Title>手机登陆</Title>
         </Header>
         <View style={s.container}>
-          <Spinner
-            visible={pending}
-            textContent={'正在登录...'}
-            textStyle={{ color: '#FFF' }}
-          />
           <Field
             name="phone"
             type="numeric"
@@ -146,15 +136,11 @@ class MobileLogin extends Component {
 
 const validate = (values: Login) => {
   const errors = {};
-  const { phone, validCode, password } = values;
+  const { phone, password } = values;
   if (!phone) {
     errors.phone = '手机号不可为空';
   } else if (phone.length !== 11) {
     errors.phone = '请输入正确的手机号';
-  } else if (!validCode) {
-    errors.validCode = '验证码不可为空';
-  } else if (validCode !== 4) {
-    errors.validCode = '验证码必须为4位数';
   } else if (!password) {
     errors.password = '密码不可为空';
   }

@@ -78,6 +78,7 @@ export type Action =
   | { type: 'CHANGE_HOME_STATE', state: 'home' | 'account' | 'list' }
   | { type: 'RESET_PASSWORD', phone: Number, validCode: Number, newPassword: String }
   | { type: 'RESET_PASSWORD_SUCCEED' }
+  | { type: 'RESET_PASSWORD_FAILED', message: number }
   | { type: 'REMOVE_MESSAGE' }
   | { type: 'CANCEL_ITEM', id: Number }
   | { type: 'CANCEL_ITEM_SUCCEED' }
@@ -97,6 +98,8 @@ export type Action =
   | { type: 'WITHDRAW' }
   | { type: 'WITHDRAW_SUCCEED' }
   | { type: 'WITHDRAW_FAILED', message: String }
+  | { type: 'INCREASE_ITEM_BADGE', id: number }
+  | { type: 'DECREASE_ITEM_BADGE', id: number}
 
 
 export type Dispatch = (action:Action | Array<Action>) => any;

@@ -18,7 +18,6 @@ const {
 } = actions;
 
 type Props = {
-  replaceAt: (routeKey: String, route: { key: String }, key: String) => void,
   pushRoute: (route: { key: String }, key: String) => void,
   navigation: {
     key: String,
@@ -39,11 +38,8 @@ class Login extends Component {
     }
   }
   props: Props
-  replaceRoute(route) {
-    this.props.replaceAt('login', { key: route }, this.props.navigation.key);
-  }
 
-  pushRoute(route) {
+  pushRoute(route: string) {
     this.props.pushRoute({ key: route }, this.props.navigation.key);
   }
 

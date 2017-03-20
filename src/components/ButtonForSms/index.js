@@ -5,7 +5,7 @@ import {
   View,
 } from 'native-base';
 
-import { StyleSheet, TextInput } from 'react-native';
+import { StyleSheet, TextInput, Alert } from 'react-native';
 import BackgroundTimer from 'react-native-background-timer';
 
 // import myTheme from '../../theme/base-theme';
@@ -66,16 +66,19 @@ class ForSms extends Component {
     BackgroundTimer.clearInterval(this.timer);
   }
   handlePress() {
-    this.props.button();
-    this.setState({ available: false, timing: 60 });
-    this.timer = BackgroundTimer.setInterval(() => this.setState(pre => ({
-      timing: pre.timing - 1,
-    }), () => {
-      if (this.state.timing <= 0) {
-        BackgroundTimer.clearInterval(this.timer);
-        this.setState({ available: true });
-      }
-    }), 1000);
+    if (this.props.button()) {
+      this.setState({ available: false, timing: 60 });
+      this.timer = BackgroundTimer.setInterval(() => this.setState(pre => ({
+        timing: pre.timing - 1,
+      }), () => {
+        if (this.state.timing <= 0) {
+          BackgroundTimer.clearInterval(this.timer);
+          this.setState({ available: true });
+        }
+      }), 1000);
+    } else {
+      Alert.alert('获取验证码失败', '请填写正确的手机号码');
+    }
   }
   props: Props
   render() {

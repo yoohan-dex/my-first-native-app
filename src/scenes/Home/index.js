@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { ScrollView, Platform } from 'react-native';
+import { Alert, ScrollView, Platform } from 'react-native';
+import { actions } from 'react-native-navigation-redux-helpers';
 import {
   Container,
   Header,
@@ -21,6 +22,7 @@ import {
   getCancelled,
   getFulfilled,
   robItemClean,
+  getItemDetail,
 } from '../../actions/carList';
 import { State } from '../../reducers/carList';
 
@@ -30,29 +32,37 @@ import Me from '../../modules/Me';
 
 import myTheme from '../../theme/base-theme';
 
-import { changeHomeState } from '../../actions/home';
+import { changeHomeState, decreaseItemBadge } from '../../actions/home';
+
+const { pushRoute } = actions;
 
 type Props = {
   getWaiting: () => void,
   robItem: (id: number) => void,
   carList: State,
-  home: { tab: string },
+  home: { tab: string, activeItems: number },
   getUnfulfilled: () => void,
   getCancelled: () => void,
   getFulfilled: () => void,
   changeHomeState: (tab: 'home' | 'list' | 'account') => void,
   robItemClean: () => void,
+  getItemDetail: (id: number) => void,
   app: { login: boolean },
+  pushRoute: (route: {key: string}, key: string) => void,
+  decreaseItemBadge: (id: number) => void,
 }
 
 class Home extends Component {
   constructor(props) {
     super(props);
-
+    this.state = {
+      robingItem: '',
+    };
     this.renderTitle = this.renderTitle.bind(this);
     this.renderContent = this.renderContent.bind(this);
     this.robItem = this.robItem.bind(this);
     this.getList = this.getList.bind(this);
+    this.afterRobingSuccess = this.afterRobingSuccess.bind(this);
   }
   componentDidMount() {
     if (this.props.app.login) {
@@ -70,16 +80,37 @@ class Home extends Component {
     }
   }
 
+  componentDidUpdate(preProps) {
+    if (preProps.carList.state !== this.props.carList.state && this.props.carList.state === 'success') {
+      Alert.alert(
+        '抢单成功',
+        '去查看订单详情吗',
+        [{
+          text: '继续抢单', onPress: () => 0, style: 'cancel',
+        }, {
+          text: '查看详情', onPress: () => this.afterRobingSuccess(), style: 'default',
+        }]);
+    }
+  }
+
+
   getList: () => void
   getList() {
     this.props.getUnfulfilled();
     this.props.getFulfilled();
     this.props.getCancelled();
   }
+  afterRobingSuccess() {
+    this.props.getItemDetail(this.state.robingItem);
+    this.props.pushRoute({ key: 'item-detail' }, 'global');
+    this.props.decreaseItemBadge(this.state.robingItem);
+  }
 
   robItem(id) {
+    this.setState({ robingItem: id });
     this.props.robItem(id);
   }
+
 
   props: Props
   renderContent() {
@@ -123,7 +154,7 @@ class Home extends Component {
     }
   }
   render() {
-    const { tab } = this.props.home;
+    const { tab, activeItems } = this.props.home;
     const { changeHomeState: setState } = this.props;
     const list = tab === 'list';
     const android = Platform.OS === 'android';
@@ -144,17 +175,25 @@ class Home extends Component {
               active={tab === 'home'}
               onPress={() => setState('home')}
             >
-              <Badge>2</Badge>
                 抢单
                 <Icon name="home" />
             </Button>
-            <Button
-              active={tab === 'list'}
-              onPress={() => setState('list')}
-            >
+            {
+              activeItems.length > 0 ? <Button
+                active={tab === 'list'}
+                onPress={() => setState('list')}
+              >
+                <Badge>{activeItems.length}</Badge>
+                  订单
+                  <Icon name="list" />
+              </Button> : <Button
+                active={tab === 'list'}
+                onPress={() => setState('list')}
+              >
                 订单
                 <Icon name="list" />
-            </Button>
+              </Button>
+            }
             <Button
               active={tab === 'account'}
               onPress={() => setState('account')}
@@ -178,6 +217,9 @@ function bindActions(dispatch) {
     getCancelled: () => dispatch(getCancelled()),
     getFulfilled: () => dispatch(getFulfilled()),
     robItemClean: () => dispatch(robItemClean()),
+    getItemDetail: id => dispatch(getItemDetail(id)),
+    pushRoute: (route, key) => dispatch(pushRoute(route, key)),
+    decreaseItemBadge: (id: string) => dispatch(decreaseItemBadge(id)),
   };
 }
 

@@ -11,6 +11,7 @@ export const ROB_ITEM_CLEAN = 'ROB_ITEM_CLEAN';
 
 export const GET_UNFULFILLED_ITEMS = 'GET_UNFULFILLED_ITEMS';
 export const GET_UNFULFILLED_ITEMS_SUCCEED = 'GET_UNFULFILLED_ITEMS_SUCCEED';
+export const GET_UNFULFILLED_ITEMS_FAILED = 'GET_UNFULFILLED_ITEMS_FAILED';
 
 export const GET_ITEM_DETAIL = 'GET_ITEM_DETAIL';
 export const GET_ITEM_DETAIL_SUCCEED = 'GET_ITEM_DETAIL_SUCCEED';
@@ -80,6 +81,13 @@ export function getUnfulfilledSucceed(list: Object[]): Action {
   return ({
     type: GET_UNFULFILLED_ITEMS_SUCCEED,
     list,
+  });
+}
+
+export function getUnfulfilledFailed(message: string): Action {
+  return ({
+    type: GET_UNFULFILLED_ITEMS_FAILED,
+    message,
   });
 }
 

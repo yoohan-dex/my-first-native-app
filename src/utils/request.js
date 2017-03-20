@@ -5,7 +5,6 @@ function checkStatus(response) {
     return response;
   }
   const error = new Error(response.statusText);
-  console.log(response);
   error.response = response;
   throw error;
 }
@@ -19,7 +18,6 @@ function checkResult(response) {
     return response.resultParm;
   }
   const error = new Error(response.resultInfo);
-  console.log('error: ', response);
   error.response = response;
   throw error;
 }
@@ -29,7 +27,6 @@ export default (type = 'driver') => function request(url, options) {
     .then(parseJSON)
     .then(checkResult)
     .then(data => ({ data }));
-    // .catch(err => ({ err }));
 };
 
 export function get(url, options) {
@@ -38,7 +35,6 @@ export function get(url, options) {
     .then(parseJSON)
     .then(checkResult)
     .then(data => ({ data }));
-    // .catch(err => ({ err }));
 }
 const serializeJSON = data => Object.keys(data).map(keyName => `${encodeURIComponent(keyName)}=${encodeURIComponent(data[keyName])}`).join('&');
 
@@ -54,9 +50,7 @@ export const post = type => (url, parm) =>
   .then(checkStatus)
   .then(parseJSON)
   .then(checkResult)
-  .then(data => ({ data }))
-  // .catch(err => ({ err }));
-;
+  .then(data => ({ data }));
 
 export function upload(url, formData) {
   return fetch(`${config.host}/${url}`, { // eslint-disable-line no-undef

@@ -12,7 +12,6 @@ import {
   Icon,
   Text,
 } from 'native-base';
-import Spinner from 'react-native-loading-spinner-overlay';
 
 import { Field, reduxForm } from 'redux-form';
 
@@ -51,7 +50,6 @@ class MobileRegister extends Component {
     this.state = {
       uri: '',
       transfer: false,
-
     };
 
     this.getSMS = this.getSMS.bind(this);
@@ -64,9 +62,11 @@ class MobileRegister extends Component {
   getSMS: () => void
   getSMS() {
     const { values } = this.props.data;
-    if (values && values.phone) {
+    if (values && values.phone.length === 11) {
       api.mobile.getValidCode(values.phone);
+      return true;
     }
+    return false;
   }
 
   props: Props
@@ -105,11 +105,6 @@ class MobileRegister extends Component {
           <Title>手机注册</Title>
         </Header>
         <View style={s.container}>
-          <Spinner
-            visible={pending}
-            textContent={'正在注册...'}
-            textStyle={{ color: '#FFF' }}
-          />
           <Field
             name="phone"
             type="numeric"
@@ -160,7 +155,7 @@ const validate = (values: Register) => {
     errors.phone = '请输入正确的手机号';
   } else if (!validCode) {
     errors.validCode = '验证码不可为空';
-  } else if (validCode !== 4) {
+  } else if (validCode.length !== 4) {
     errors.validCode = '验证码必须为4位数';
   } else if (!password) {
     errors.password = '密码不可为空';

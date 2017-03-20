@@ -111,14 +111,14 @@ class RegisterMessage extends Component {
   uploadPerson(callback) {
     const data: PersonData = this.props.data;
     const { syncErrors } = data;
-    if (data.values && !syncErrors) {
+    if (data.values && !syncErrors.realName && !syncErrors.personCard) {
       const { personCard, realName } = data.values;
       if (realName && personCard) {
         this.props.uploadPerson({ name: realName, id: personCard });
         callback();
       }
-    } else if (syncErrors) {
-      const errors = Object.keys(syncErrors).map(v => syncErrors[v]);
+    } else if (syncErrors.realName || syncErrors.personCard) {
+      const errors = Object.keys(syncErrors).filter(v => v === 'realName' || v === 'personCard').map(v => syncErrors[v]);
       Alert.alert(errors[0]);
     }
   }

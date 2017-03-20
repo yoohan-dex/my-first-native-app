@@ -7,8 +7,12 @@ import {
   ROB_ITEM,
   ROB_FAILED,
   GET_UNFULFILLED_ITEMS_SUCCEED,
+  GET_UNFULFILLED_ITEMS_FAILED,
   GET_ITEM_DETAIL_SUCCEED,
   REMOVE_ITEM_DETAIL,
+  // GET_UNFULFILLED_ITEMS,
+  // GET_FULFILLED_ITEMS,
+  // GET_CANCELLED_ITEMS,
   GET_FULFILLED_ITEMS_SUCCEED,
   GET_FULFILLED_ITEMS_FAILED,
   GET_CANCELLED_ITEMS_SUCCEED,
@@ -45,7 +49,6 @@ export default function (state: State = initialState, action: Action): State {
     case GET_WAITING:
       return {
         ...state,
-        list: '',
         pending: true,
       };
     case GET_WAITING_SUCCEED:
@@ -58,6 +61,7 @@ export default function (state: State = initialState, action: Action): State {
       return {
         ...state,
         pending: false,
+        list: '',
         message: action.message,
       };
     case ROB_ITEM:
@@ -83,10 +87,20 @@ export default function (state: State = initialState, action: Action): State {
         state: '',
         robbing: false,
       };
+    // case GET_UNFULFILLED_ITEMS:
+    //   return {
+    //     ...state,
+    //     unfulfilled: '',
+    //   };
     case GET_UNFULFILLED_ITEMS_SUCCEED:
       return {
         ...state,
         unfulfilled: action.list,
+      };
+    case GET_UNFULFILLED_ITEMS_FAILED:
+      return {
+        ...state,
+        unfulfilled: '',
       };
     case GET_ITEM_DETAIL_SUCCEED:
       return {
@@ -98,6 +112,11 @@ export default function (state: State = initialState, action: Action): State {
         ...state,
         detail: '',
       };
+    // case GET_FULFILLED_ITEMS:
+    //   return {
+    //     ...state,
+    //     fulfilled: '',
+    //   };
     case GET_FULFILLED_ITEMS_SUCCEED:
       return {
         ...state,
@@ -108,6 +127,11 @@ export default function (state: State = initialState, action: Action): State {
         ...state,
         fulfilled: '',
       };
+    // case GET_CANCELLED_ITEMS:
+    //   return {
+    //     ...state,
+    //     cancelled: '',
+    //   };
     case GET_CANCELLED_ITEMS_SUCCEED:
       return {
         ...state,

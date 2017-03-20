@@ -32,7 +32,7 @@ const Row = ({ start, end, time, money, add, reject, buttonState }: RowProps) =>
         <Col size={25} style={{ justifyContent: 'space-between', paddingHorizontal: 10, paddingVertical: 15 }}>
           <Text style={{ textAlign: 'center', color: 'green', fontSize: 20, lineHeight: 30, fontWeight: 'bold', marginBottom: 10 }}>{`${money} 元`}</Text>
           <RectangleButton
-            buttonState={buttonState}
+            buttonState={buttonState || 'add'}
             style={{ alignSelf: 'center', borderRadius: 5 }}
             height={45}
             width={70}

@@ -12,10 +12,8 @@ import s from './styles';
 import background from '../../images/login.jpeg';
 
 import { wechatLogin } from '../../actions/login';
-import { State } from '../../reducers/user';
 
 const {
-  replaceAt,
   pushRoute,
 } = actions;
 
@@ -27,7 +25,6 @@ type Props = {
     key: String,
   },
   wechatLogin: () => void,
-  user: State,
   login: Object,
 }
 
@@ -104,7 +101,6 @@ function bindActions(dispatch) {
 
 const mapStateToProps = state => ({
   navigation: state.cardNavigation,
-  user: state.user,
   login: state.mobileLogin,
 });
 

@@ -6,10 +6,10 @@ import reset from './reset';
 
 export default function* rootSaga() {
   yield [
+    reset(),
     saga(),
     login(),
     carList(),
     action(),
-    reset(),
   ];
 }

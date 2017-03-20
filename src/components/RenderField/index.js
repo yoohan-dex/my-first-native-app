@@ -1,8 +1,5 @@
 import React from 'react';
 import {
-  InputGroup,
-  Input,
-  Icon,
   View,
 } from 'native-base';
 

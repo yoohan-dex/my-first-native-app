@@ -12,27 +12,29 @@ import {
 } from 'react-native';
 import { connect } from 'react-redux';
 import { getStoredState } from 'redux-persist';
+import push from 'jpush-react-native';
 // import Modal from 'react-native-modalbox';
 // import Icon from 'react-native-vector-icons/EvilIcons';
-// import push from './utils/push';
-import push from 'jpush-react-native';
+import pusher from './utils/push';
 
 import abyss from './images/monkey.jpeg';
 import AppNavigator from './AppNavigator';
 import { mobileLogin, wechatAutoLogin } from './actions/login';
+import { getWaiting } from './actions/carList';
 
 type Props = {
   app: { login: Boolean, error: String },
   login: (user: String, password: String) => void,
   wechatLogin: (account: String, token: String) => void,
+  getWaiting: () => void,
   user: {
-    user: String,
-    id: Number,
+    userType: string,
+    user: string,
+    id: number,
   },
 }
 
 class App extends Component {
-
   constructor() {
     super();
 
@@ -42,6 +44,7 @@ class App extends Component {
 
     this.ready = this.ready.bind(this);
   }
+  state: { ready: boolean }
 
   async componentDidMount() {
     try {
@@ -59,14 +62,15 @@ class App extends Component {
       } else {
         this.ready();
       }
+      push.addReceiveNotificationListener(() => this.props.getWaiting());
     } catch (e) {
       this.ready();
     }
   }
 
   componentWillUpdate(nextProps) {
-    if (!this.props.user.user && nextProps.user.user && this.props.user.id) {
-      push(this.props.user.user.id, ['0']);
+    if (!this.props.user.userType && nextProps.user.userType && nextProps.user.id) {
+      pusher(`${nextProps.user.id}`, ['0']);
     }
     if (nextProps.app.login && !this.state.ready) {
       this.ready();
@@ -75,7 +79,9 @@ class App extends Component {
       this.ready();
     }
   }
-
+  componentWillUnmount() {
+    push.removeReceiveNotificationListener();
+  }
   props: Props
   ready: () => void
   ready() {
@@ -103,6 +109,7 @@ function bindActions(dispatch) {
   return {
     login: (user, password) => dispatch(mobileLogin({ phone: user, password })),
     wechatLogin: (account, token) => dispatch(wechatAutoLogin(account, token)),
+    getWaiting: () => dispatch(getWaiting()),
   };
 }
 

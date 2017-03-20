@@ -1,4 +1,4 @@
-import { call, put, takeEvery, takeLates, take, fork } from 'redux-saga/effects';
+import { call, put, take, fork } from 'redux-saga/effects';
 import { AsyncStorage, Alert } from 'react-native';
 import { purgeStoredState, getStoredState } from 'redux-persist';
 import * as wechat from 'react-native-wechat';
@@ -8,17 +8,15 @@ import { driverState } from '../utils/parseState';
 
 import {
   MOBILE_LOGIN,
-  LOGIN_FAIL,
+  loginFail,
   loginFullfill,
   LOGOUT,
   logoutFulfill,
   WECHAT_LOGIN,
-  wechatLoginFailed,
   RELOGIN,
   WECHAT_AUTO_LOGIN,
 } from '../actions/login';
 
-import { setUser } from '../actions/global';
 import { saveUser, saveWechatUser } from '../actions/user';
 import { appOnload } from '../actions/app';
 import { changeHomeState } from '../actions/home';
@@ -27,19 +25,21 @@ import api from '../api';
 
 const { reset } = actions;
 
-function* mobileLogin(action) {
-  try {
-    const result = yield call(api.mobileLogin, action.form);
-    if (result) {
-      const { KEY_DRIVER_STATE, KEY_DRIVER_ID: id, KEY_WECHAT_BINDING_RESULT: bind } = result.data;
-      const state = driverState(KEY_DRIVER_STATE);
-      yield put(appOnload());
-      yield put(loginFullfill());
-      yield put(saveUser(action.form.phone, action.form.password, state, bind, id));
-      yield put(setUser(action.form.phone));
+function* mobileLogin() {
+  while (true) {
+    const action = yield take(MOBILE_LOGIN);
+    try {
+      const result = yield call(api.mobileLogin, action.form);
+      if (result) {
+        const { KEY_DRIVER_STATE, KEY_DRIVER_ID: id, KEY_WECHAT_BINDING_RESULT: bind } = result.data;
+        const state = driverState(KEY_DRIVER_STATE);
+        yield put(loginFullfill());
+        yield put(saveUser(action.form.phone, action.form.password, state, bind, id));
+        yield put(appOnload());
+      }
+    } catch ({ message }) {
+      yield put(loginFail(message));
     }
-  } catch ({ message }) {
-    yield put({ type: LOGIN_FAIL, message });
   }
 }
 
@@ -61,7 +61,7 @@ function* wechatLogin() {
           yield put(saveWechatUser(account, token, state, bind, id));
         }
       } else {
-        yield put(wechatLoginFailed('你还没有安装微信'));
+        yield Alert.alert('你还没有安装微信');
       }
     } catch ({ message }) {
       Alert.alert(message);
@@ -122,11 +122,11 @@ function* relogin() {
 }
 
 function* mySaga() {
+  yield fork(mobileLogin);
   yield fork(wechatAutoLogin);
   yield fork(relogin);
   yield fork(logout);
   yield fork(wechatLogin);
-  yield takeEvery(MOBILE_LOGIN, mobileLogin);
 }
 export default mySaga;
 

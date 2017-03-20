@@ -1,6 +1,6 @@
 import { delay } from 'redux-saga';
 import { call, put, fork, take } from 'redux-saga/effects';
-import wechat from 'react-native-wechat';
+import * as wechat from 'react-native-wechat';
 import { actions as routeActions } from 'react-native-navigation-redux-helpers';
 import { Alert } from 'react-native';
 import {
@@ -29,6 +29,7 @@ import {
 } from '../actions/home';
 import {
   getItemDetail,
+  getUnfulfilled,
 } from '../actions/carList';
 
 import api from '../api';
@@ -43,8 +44,10 @@ function* receive() {
       yield call(api.action.receivedPassenger, id, longitude, latitude);
       yield put(getItemDetail(id));
       yield put(receiveSucceed());
+      yield put(getUnfulfilled());
     } catch ({ message }) {
       yield put(receiveSucceed());
+      yield put(getUnfulfilled());
       yield delay(200);
       Alert.alert(message);
     }
@@ -59,8 +62,10 @@ function* arrival() {
       yield call(api.action.arrivalConfirm, id, longitude, latitude);
       yield put(getItemDetail(id));
       yield put(arrivalSucceed());
+      yield put(getUnfulfilled());
     } catch ({ message }) {
       yield put(arrivalSucceed());
+      yield put(getUnfulfilled());
       yield delay(200);
       Alert.alert(message);
     }
@@ -74,6 +79,7 @@ function* cancel() {
     try {
       yield call(api.action.cancelItem, id);
       yield put(cancelSucceed());
+      yield put(getUnfulfilled());
       yield put(reset([{
         key: 'home',
         index: 0,
@@ -85,6 +91,7 @@ function* cancel() {
       }], 'global'));
     } catch ({ message }) {
       yield put(cancelSucceed());
+      yield put(getUnfulfilled());
       yield delay(200);
       Alert.alert(message);
     }
@@ -112,12 +119,7 @@ function* bindPhone() {
 function* bindWechat() {
   while (true) {
     yield take(BIND_WECHAT);
-    let isInstalled;
-    try {
-      isInstalled = yield wechat.isWXAppInstalled();
-    } catch (e) {
-      // ...
-    }
+    const isInstalled = yield wechat.isWXAppInstalled();
     if (isInstalled) {
       try {
         const code = yield wechat.sendAuthRequest('snsapi_userinfo');

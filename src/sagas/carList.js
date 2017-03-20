@@ -5,18 +5,24 @@ import {
   getWaitingSucceed,
   getWaitingFailed,
   GET_WAITING,
+  getWaiting,
   ROB_ITEM,
   robFailed,
   robSucceed,
   GET_UNFULFILLED_ITEMS,
+  getUnfulfilled as fetchUnfulfilled,
   getUnfulfilledSucceed,
+  getUnfulfilledFailed,
   GET_ITEM_DETAIL,
   getItemDetailSucceed,
   GET_FULFILLED_ITEMS,
   getFulfilledSucceed,
+  getFulfilledFailed,
   GET_CANCELLED_ITEMS,
   getCancelledSucceed,
+  getCancelledFailed,
 } from '../actions/carList';
+import { increaseItemBadge } from '../actions/home';
 
 import api from '../api';
 import moment from '../utils/moment';
@@ -49,10 +55,14 @@ function* robItem() {
       yield call(api.car.robItem, action.id);
       yield delay(1000);
       yield put(robSucceed());
+      yield put(fetchUnfulfilled());
+      yield put(increaseItemBadge(action.id));
     } catch ({ message }) {
       yield delay(1000);
       yield put(robFailed());
-      // Alert.alert('抢单失败', message);
+      yield delay(1000);
+      yield put(getWaiting());
+      Alert.alert('抢单失败', message);
     }
   }
 }
@@ -74,7 +84,7 @@ function* getUnfulfilled() {
       }));
       yield put(getUnfulfilledSucceed(list));
     } catch ({ message }) {
-      // ...
+      yield put(getUnfulfilledFailed(message));
     }
   }
 }
@@ -108,6 +118,11 @@ function* getItemDetail() {
             neatness: v.vehicle_score,
           },
         })),
+        dispute: car.disputeInfoPojo && {
+          result: car.disputeInfoPojo.dispute_result,
+          money: car.disputeInfoPojo.dispute_finalfare,
+          reason: car.disputeInfoPojo.disputePassengerInfoPojos.map(v => `${v.nickname}${v.disputeReason}`),
+        },
         createAt: car.createTime,
         money: car.fare,
         id: car.cargroup_orderId,
@@ -135,7 +150,7 @@ function* getFulfilled() {
       }));
       yield put(getFulfilledSucceed(list));
     } catch ({ message }) {
-      // ...
+      yield put(getFulfilledFailed(message));
     }
   }
 }
@@ -157,7 +172,7 @@ function* getCancelled() {
       }));
       yield put(getCancelledSucceed(list));
     } catch ({ message }) {
-      // ..
+      yield put(getCancelledFailed(message));
     }
   }
 }

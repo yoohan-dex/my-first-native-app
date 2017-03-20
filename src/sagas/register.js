@@ -1,6 +1,7 @@
 import { call, put, takeEvery, takeLatest, fork, take } from 'redux-saga/effects';
 import {
   REGISTER_FULLFILL,
+  registerFullfill,
   MOBILE_REGISTER,
   UPLOAD_IMAGE,
   GET_AREA_LIST,
@@ -11,22 +12,23 @@ import {
   registerError,
   getAreaListSuccess,
 } from '../actions/register';
-import { saveUser } from '../actions/user';
-import { setUser } from '../actions/global';
+import { mobileLogin } from '../actions/login';
 
 import api from '../api';
 
 
-function* mobileregister(action) {
-  try {
-    const result = yield call(api.mobileRgister.register, action.form);
-    if (result) {
-      yield put(saveUser(action.form.phone, action.form.password));
-      yield put(setUser(action.form.phone));
-      yield put({ type: REGISTER_FULLFILL });
+function* mobileregister() {
+  while (true) {
+    const action = yield take(MOBILE_REGISTER);
+    try {
+      const result = yield call(api.mobileRgister.register, action.form);
+      if (result) {
+        yield put(registerFullfill());
+        yield put(mobileLogin({ phone: action.form.phone, password: action.form.password }));
+      }
+    } catch ({ message }) {
+      yield put(registerError(message));
     }
-  } catch ({ message }) {
-    yield put(registerError(message));
   }
 }
 
@@ -46,7 +48,7 @@ function* uploadMessage() {
 
 function* getArea() {
   while (true) {
-    const a = yield take(GET_AREA_LIST);
+    yield take(GET_AREA_LIST);
     try {
       const result = yield call(api.mobileRgister.getServiceAreaList);
       const list = result.data.KEY_LIST_MARKETAREAS;
@@ -82,10 +84,10 @@ function* uploadCar() {
 }
 
 function* mySaga() {
+  yield fork(mobileregister);
   yield fork(uploadPerson);
   yield fork(uploadCar);
   yield fork(uploadMessage);
   yield fork(getArea);
-  yield takeEvery(MOBILE_REGISTER, mobileregister);
 }
 export default mySaga;

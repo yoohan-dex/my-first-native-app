@@ -26,6 +26,7 @@ import {
   cancel,
 } from '../../actions/action';
 import { changeHomeState } from '../../actions/home';
+import * as c from '../../constants/orderState';
 
 const {
   popRoute,
@@ -44,6 +45,7 @@ type Props = {
     dead: Number,
     passengers: [],
     comments: [],
+    dispute: Object,
   },
   action: { pending: Boolean },
   removeDetail: () => void,
@@ -62,18 +64,18 @@ class ItemDetail extends Component {
     this.confirmArrival = this.confirmArrival.bind(this);
     this.back = this.back.bind(this);
     this.cancel = this.cancel.bind(this);
+    this.passengerModule = this.passengerModule.bind(this);
   }
 
   getCurrentPosition(callback) { // eslint-disable-line
     navigator.geolocation.getCurrentPosition((position) => { // eslint-disable-line
       const { latitude, longitude } = position.coords;
       callback(latitude, longitude);
-    }, err =>
-      alert(JSON.stringify(err)), { // eslint-disable-line
-        enableHighAccuracy: true,
-        timeout: 20000,
-        maximumAge: 1000,
-      });
+    }, err => Alert.alert('GPS有问题，查看是否打开GPS定位'), { // eslint-disable-line
+      enableHighAccuracy: false,
+      timeout: 5000,
+      maximumAge: 1000,
+    });
   }
 
   popRoute() {
@@ -114,9 +116,24 @@ class ItemDetail extends Component {
     }]);
   }
 
+  passengerModule() {
+    const { state, passengers, comments } = this.props.detail;
+    switch (state) {
+      case c.ONGOING:
+      case c.CONFIRM_ARRIVAL:
+      case c.CONFIRM_RECEIVE:
+        return <Passenger passengers={passengers} />;
+      case c.ORDER_FULFILLED:
+      case c.ORDER_ISSUE_OVER:
+        return <Comments comments={comments} />;
+      default:
+        return <View />;
+    }
+  }
+
   props: Props
   render() {
-    const { id, start, end, time, money, state, dead, passengers, comments } = this.props.detail;
+    const { id, start, end, time, money, state, dead, dispute } = this.props.detail;
     const { pending } = this.props.action;
     return (
       <Container theme={myTheme}>
@@ -142,13 +159,9 @@ class ItemDetail extends Component {
               money={money}
               state={state}
               dead={dead}
+              dispute={dispute}
             /> : undefined }
-          {passengers ?
-            <Passenger passengers={passengers} /> :
-            undefined }
-          {comments ?
-            <Comments comments={comments} />
-          : undefined }
+          {this.passengerModule()}
           <ItemAction
             state={state}
             receive={this.confirmReceive}

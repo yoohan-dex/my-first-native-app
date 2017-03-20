@@ -13,7 +13,6 @@ import {
 } from 'native-base';
 import { Alert } from 'react-native';
 
-import Spinner from 'react-native-loading-spinner-overlay';
 import { Field, reduxForm } from 'redux-form';
 
 import renderField from '../../components/RenderField';
@@ -70,7 +69,9 @@ class ResetPassword extends Component {
     const { values } = this.props.data;
     if (values && values.phone.length === 11) {
       api.mobile.getValidCode(values.phone);
+      return true;
     }
+    return false;
   }
 
   props: Props
@@ -109,11 +110,6 @@ class ResetPassword extends Component {
           <Title>重置密码</Title>
         </Header>
         <View style={s.container}>
-          <Spinner
-            visible={pending}
-            textContent={'正在重新设置'}
-            textStyle={{ color: '#FFF' }}
-          />
           <Field
             name="phone"
             type="numeric"
@@ -161,7 +157,7 @@ const validate = (values) => {
     errors.phone = '请输入正确的手机号';
   } else if (!validCode) {
     errors.validCode = '验证码不可为空';
-  } else if (validCode !== 4) {
+  } else if (validCode.length !== 4) {
     errors.validCode = '验证码必须为4位数';
   } else if (!password) {
     errors.password = '密码不可为空';

@@ -16,7 +16,7 @@ function* resetPassword() {
     const action = yield take(RESET_PASSWORD);
     try {
       const { phone, validCode, newPassword } = action;
-      yield call(api.reset.resetPassword, phone, validCode, newPassword);
+      yield call(api.resetPassword, phone, validCode, newPassword);
       yield put(resetPasswordSucceed());
       yield delay(200);
       yield put(mobileLogin({ phone, password: newPassword }));

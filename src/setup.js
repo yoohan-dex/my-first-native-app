@@ -16,7 +16,7 @@ function setup():Component {
       super();
       this.state = {
         isLoading: false,
-        store: configureStore(() => this.setState({ isLoading: false })),
+        store: configureStore(),
       };
       runSaga();
       if (Platform.OS === 'android') {
